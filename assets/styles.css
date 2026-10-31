@@ -66,14 +66,24 @@ img{display:block}
 /* ---------- bandeau haut ---------- */
 .top{position:sticky; top:env(safe-area-inset-top,0px); z-index:20;
   background:var(--card); border-bottom:1px solid var(--rule)}
+/* Une seule ligne : titre, compteur, bouton de recherche. Le champ et le
+   bandeau d'état n'apparaissent que quand ils ont quelque chose à dire. */
 .top-in{max-width:760px; margin:0 auto;
   padding-left:max(16px,env(safe-area-inset-left,0px));
   padding-right:max(16px,env(safe-area-inset-right,0px));
-  padding-block:10px 12px; display:flex; flex-direction:column; gap:10px}
-.brand{display:flex; align-items:center; justify-content:space-between; gap:12px}
-.brand h1{font:600 26px/.95 var(--f-disp); letter-spacing:.015em; text-transform:uppercase}
-.tally{margin:0; font-size:13px; color:var(--ink-2); white-space:nowrap}
-.tally b{font:800 20px/1 var(--f-disp); color:var(--blue); font-variant-numeric:tabular-nums}
+  padding-block:8px 9px; display:flex; flex-direction:column; gap:9px}
+.brand{display:flex; align-items:center; gap:10px; min-height:46px}
+.brand h1{font:600 23px/1 var(--f-disp); letter-spacing:.015em; text-transform:uppercase;
+  flex:1; min-width:0}
+.tally{margin:0 0 0 auto; font-size:13px; color:var(--ink-2); white-space:nowrap}
+.tally b{font:800 19px/1 var(--f-disp); color:var(--blue); font-variant-numeric:tabular-nums}
+
+.fab{flex:none; width:44px; height:44px; border-radius:50%; color:var(--blue);
+  background:var(--card); border:1.5px solid var(--rule); display:grid; place-items:center;
+  box-shadow:var(--shadow); transition:transform .12s, border-color .12s, background .12s}
+.fab:hover{border-color:var(--blue)}
+.fab:active{transform:scale(.92)}
+.fab[aria-expanded="true"]{background:var(--blue); border-color:var(--blue); color:var(--on-blue)}
 
 .search{position:relative; display:flex}
 .search input{width:100%; min-width:0; font:500 17px/1 var(--f-body); color:var(--ink);

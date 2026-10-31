@@ -20,7 +20,7 @@ let series = [];               // [{id, name, cover_path, custom, albums:[…]}]
 const byId = new Map();
 
 let view = { name: 'shelf', id: null };
-let filter = 'all', query = '', adding = null, authStep = null;
+let filter = 'all', query = '', adding = null, authStep = null, searchOpen = false;
 let editMode = false, editingAlbum = null;   // modification d'une série et de ses albums
 let pendingWrites = 0, lastError = null, loadError = null;
 
@@ -190,22 +190,21 @@ async function renameSerie(s, name) {
 }
 
 /* ========================= bandeau d'état ========================= */
+/* Le bandeau ne dit que ce qui mérite d'être dit : il disparaît quand tout va
+   bien, plutôt que de répéter « enregistré » au-dessus de chaque écran. */
 function setSync() {
-  const el = $('sync'), t = $('sync-t'), btn = $('auth-btn');
-  let etat = 'ok', texte = 'Tout est enregistré';
+  const el = $('sync'), t = $('sync-t');
+  let etat = null, texte = '';
 
-  // Un échec de lecture passe avant tout le reste : sinon la page affiche une
-  // liste périmée en annonçant tranquillement que tout va bien.
+  // Un échec de lecture passe avant tout le reste : sinon la page afficherait
+  // une liste périmée sans le dire.
   if (!sb) { etat = 'local'; texte = 'Configuration incomplète'; }
   else if (loadError) { etat = 'local'; texte = 'Hors connexion — liste du dernier passage'; }
   else if (pendingWrites > 0) { etat = 'saving'; texte = 'Enregistrement…'; }
   else if (lastError) { etat = 'local'; texte = 'Enregistrement impossible — réessayez'; }
-  else if (!canWrite()) { etat = 'signin'; texte = 'Connectez-vous pour cocher'; }
 
-  el.dataset.s = etat;
-  t.textContent = texte;
-  btn.hidden = !sb;
-  btn.textContent = canWrite() ? 'Déconnexion' : 'Se connecter';
+  el.hidden = !etat || !ouvert();
+  if (etat) { el.dataset.s = etat; t.textContent = texte; }
 }
 
 /* ========================= visuels ========================= */
@@ -384,7 +383,11 @@ function renderStats() {
     </div>
     ${near.length ? `<p class="eyebrow">Bientôt complètes</p>
       <p class="hint">Trois albums ou moins vous séparent de la série entière.</p>
-      <ul class="shelf">${near.map(g => tile(g.s)).join('')}</ul>` : ''}`;
+      <ul class="shelf">${near.map(g => tile(g.s)).join('')}</ul>` : ''}
+    <p class="section-label">Le compte</p>
+    <p class="hint">Connectée avec <b>${esc((session && session.user && session.user.email) || '')}</b>.
+       La connexion reste active : il n’y a pas à se reconnecter à chaque visite.</p>
+    <div class="btns"><button class="btn" data-auth-signout>Déconnexion</button></div>`;
 }
 
 function renderSearch() {
@@ -499,16 +502,17 @@ function render() {
   const name = (gate || authStep) ? 'auth' : (searching ? 'search' : view.name);
   $('v-boot').hidden = true;
   $('tabs').hidden = gate;
-  $('search').hidden = gate;
   $('tally').hidden = gate;
-  $('sync').hidden = gate;
+  $('q-open').hidden = gate;
+  $('search').hidden = gate || !searchOpen;
+  $('q-open').setAttribute('aria-expanded', String(searchOpen && !gate));
+  setSync();
   for (const v of ['auth', 'search', 'shelf', 'detail', 'missing', 'stats'])
     $('v-' + v).hidden = v !== name;
   ({ auth: renderAuth, search: renderSearch, shelf: renderShelf, detail: renderDetail,
     missing: renderMissing, stats: renderStats })[name]();
   if (adding && name === 'shelf') renderAddPanel();
   updateTallies();
-  $('q-clear').hidden = !searching;
   for (const b of document.querySelectorAll('.tab'))
     b.setAttribute('aria-current',
       !searching && !authStep && b.dataset.tab === (view.name === 'detail' ? 'shelf' : view.name)
@@ -629,19 +633,25 @@ document.addEventListener('click', async e => {
 
   const tab = e.target.closest('.tab');
   if (tab) {
-    query = ''; $('q').value = ''; adding = null; authStep = null;
+    query = ''; $('q').value = ''; searchOpen = false; adding = null; authStep = null;
     try { localStorage.setItem(LS + '.tab', tab.dataset.tab); } catch (err) {}
     return go(tab.dataset.tab);
   }
+  // Le focus doit rester dans le geste de l'utilisatrice, sans `await` avant
+  // lui : sinon iOS refuse d'ouvrir le clavier.
+  if (e.target.closest('#q-open')) {
+    searchOpen = !searchOpen;
+    if (!searchOpen) { query = ''; $('q').value = ''; }
+    render();
+    if (searchOpen) { $('q').focus(); $('q').select(); }
+    return;
+  }
   if (e.target.closest('#q-clear')) {
-    query = ''; $('q').value = ''; render(); return $('q').focus();
+    searchOpen = false; query = ''; $('q').value = '';
+    return render();
   }
 
   /* connexion */
-  if (e.target.closest('#auth-btn')) {
-    if (canWrite()) { await sb.auth.signOut(); return; }
-    authStep = { step: 'ask', email: '' }; toTop(); return render();
-  }
   if (e.target.closest('[data-auth-close]')) { authStep = null; return render(); }
   if (e.target.closest('[data-auth-signout]')) { await sb.auth.signOut(); return; }
   if (e.target.closest('[data-auth-send]')) {
@@ -786,6 +796,9 @@ document.addEventListener('input', e => {
 });
 
 document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && searchOpen) {
+    searchOpen = false; query = ''; $('q').value = ''; return render();
+  }
   if (e.key !== 'Enter') return;
   const id = e.target.id;
   if (id === 'ae-t' || id === 'ae-n') { e.preventDefault(); document.querySelector('[data-ae-add]')?.click(); }
