@@ -1,0 +1,924 @@
+<title>Ma collection de BD</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800&family=Public+Sans:wght@400;500;600;700&display=swap">
+
+<style>
+/* Layout : application à écran unique pensée pour le pouce — recherche collante
+   en haut, contenu défilant, barre d'onglets fixée en bas. L'étagère est le motif
+   central : les couvertures en grille, et sous chacune la part déjà rentrée. */
+:root{
+  --paper:#EFEDE6; --card:#FFFFFF; --card-2:#F7F5F0; --sunk:#E4E1D8;
+  --ink:#141B26; --ink-2:#5B6573; --rule:#D8D5CA;
+  --blue:#1F4E79; --gold:#B8801C;
+  --have:#2C6A4E; --have-bg:#E2EDE6;
+  --want:#A1362A; --want-bg:#F3E3E0;
+  --on-blue:#FFFFFF; --on-have:#FFFFFF; --on-cover:#FFFFFF;
+  --shadow:0 1px 2px rgba(20,27,38,.07), 0 6px 18px -10px rgba(20,27,38,.22);
+  --shadow-lift:0 2px 6px rgba(20,27,38,.12), 0 14px 30px -14px rgba(20,27,38,.34);
+  --f-disp:"Big Shoulders Display","Haettenschweiler","Arial Narrow",sans-serif;
+  --f-body:"Public Sans","Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --paper:#111823; --card:#1A212C; --card-2:#202833; --sunk:#0C121B;
+  --ink:#E9E7E0; --ink-2:#97A2B2; --rule:#2C3542;
+  --blue:#84ACD8; --gold:#DFA93E;
+  --have:#6BAE88; --have-bg:#1B2E26;
+  --want:#DD8574; --want-bg:#2F201E;
+  --on-blue:#0D141D; --on-have:#0C1813; --on-cover:#FFFFFF;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 18px -10px rgba(0,0,0,.6);
+  --shadow-lift:0 2px 6px rgba(0,0,0,.5), 0 14px 30px -14px rgba(0,0,0,.8);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --paper:#111823; --card:#1A212C; --card-2:#202833; --sunk:#0C121B;
+  --ink:#E9E7E0; --ink-2:#97A2B2; --rule:#2C3542;
+  --blue:#84ACD8; --gold:#DFA93E;
+  --have:#6BAE88; --have-bg:#1B2E26;
+  --want:#DD8574; --want-bg:#2F201E;
+  --on-blue:#0D141D; --on-have:#0C1813; --on-cover:#FFFFFF;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 6px 18px -10px rgba(0,0,0,.6);
+  --shadow-lift:0 2px 6px rgba(0,0,0,.5), 0 14px 30px -14px rgba(0,0,0,.8);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font:400 16px/1.45 var(--f-body);
+  -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent;
+  overscroll-behavior-y:none;
+}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);
+  background:var(--card);z-index:30}
+h1,h2,h3{margin:0;text-wrap:balance}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;touch-action:manipulation}
+img{display:block}
+:focus-visible{outline:2.5px solid var(--blue);outline-offset:2px;border-radius:6px}
+.tnum{font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+
+/* ---------- bandeau haut ---------- */
+.top{position:sticky; top:env(safe-area-inset-top,0px); z-index:20;
+  background:var(--card); border-bottom:1px solid var(--rule)}
+.top-in{max-width:760px; margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:10px 12px; display:flex; flex-direction:column; gap:10px}
+.brand{display:flex; align-items:center; justify-content:space-between; gap:12px}
+.brand h1{font:600 26px/.95 var(--f-disp); letter-spacing:.015em; text-transform:uppercase}
+.tally{margin:0; font-size:13px; color:var(--ink-2); white-space:nowrap}
+.tally b{font:800 20px/1 var(--f-disp); color:var(--blue); font-variant-numeric:tabular-nums}
+
+.search{position:relative; display:flex}
+.search input{width:100%; min-width:0; font:500 17px/1 var(--f-body); color:var(--ink);
+  background:var(--card-2); border:1.5px solid var(--rule); border-radius:13px;
+  padding:14px 46px 14px 43px; appearance:none}
+.search input::placeholder{color:var(--ink-2); font-weight:400}
+.search input::-webkit-search-cancel-button{display:none}
+.search input:focus{border-color:var(--blue); outline:none;
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--blue) 18%,transparent)}
+.search .ico{position:absolute; left:14px; top:50%; translate:0 -50%; color:var(--ink-2);
+  pointer-events:none; display:flex}
+.search .clr{position:absolute; right:5px; top:50%; translate:0 -50%; width:38px; height:38px;
+  border-radius:50%; color:var(--ink-2); font-size:21px; line-height:1; display:grid; place-items:center}
+.sync{margin:0; font-size:12.5px; color:var(--ink-2); display:flex; align-items:center; gap:6px}
+.sync .dot{width:7px;height:7px;border-radius:50%;background:var(--have);flex:none}
+.sync[data-s="local"] .dot{background:var(--gold)}
+.sync[data-s="saving"] .dot{background:var(--blue)}
+
+/* ---------- contenu ---------- */
+main{max-width:760px; margin:0 auto;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:16px calc(86px + env(safe-area-inset-bottom,0px))}
+.eyebrow{font:600 12px/1 var(--f-body); text-transform:uppercase; letter-spacing:.1em;
+  color:var(--ink-2); margin:0 0 9px}
+.hint{color:var(--ink-2); font-size:14.5px; margin:0 0 14px}
+.hint b{color:var(--ink)}
+
+.chips{display:flex; gap:8px; margin-bottom:16px; overflow-x:auto; scrollbar-width:none;
+  padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none; padding:10px 15px; border-radius:999px; border:1.5px solid var(--rule);
+  background:var(--card); font-size:14.5px; font-weight:500; color:var(--ink-2)}
+.chip[aria-pressed="true"]{background:var(--blue); border-color:var(--blue); color:var(--on-blue)}
+.chip .n{font-variant-numeric:tabular-nums; opacity:.7; margin-left:5px}
+
+/* ---------- étagère ---------- */
+.shelf{display:grid; grid-template-columns:repeat(2,1fr); gap:14px 12px;
+  list-style:none; margin:0; padding:0}
+@media (min-width:480px){ .shelf{grid-template-columns:repeat(3,1fr)} }
+@media (min-width:680px){ .shelf{grid-template-columns:repeat(4,1fr)} }
+
+.tile{width:100%; text-align:left; display:flex; flex-direction:column; gap:7px}
+.tile .art{position:relative; aspect-ratio:2/3; border-radius:11px; overflow:hidden;
+  background:var(--sunk); box-shadow:var(--shadow); transition:box-shadow .15s, transform .15s}
+.tile:active .art{transform:scale(.975)}
+.tile .art img{width:100%; height:100%; object-fit:cover}
+/* Sans couverture : le nom en haut, l'initiale en filigrane en bas — le compteur
+   occupe déjà le bas de la vignette. */
+.tile .ph{position:absolute; inset:0; display:flex; flex-direction:column; justify-content:flex-start;
+  padding:11px 11px 0; color:#fff; overflow:hidden}
+.tile .ph i{position:absolute; right:-10px; bottom:-30px; font:800 124px/1 var(--f-disp);
+  opacity:.2; font-style:normal; letter-spacing:-.03em}
+.tile .ph span{position:relative; font:600 16px/1.1 var(--f-disp); text-transform:uppercase;
+  letter-spacing:.02em}
+.tile .veil{position:absolute; inset:auto 0 0; height:58%; pointer-events:none;
+  background:linear-gradient(to top,rgba(10,14,20,.88) 0%,rgba(10,14,20,.55) 42%,transparent 100%)}
+.tile .on-art{position:absolute; inset:auto 0 0; padding:9px 10px 10px; color:var(--on-cover)}
+.tile .bar{display:block; height:5px; border-radius:3px; background:rgba(255,255,255,.32); overflow:hidden}
+.tile .bar i{display:block; height:100%; background:#fff; border-radius:3px}
+.tile .cnt{display:block; font-size:12.5px; font-weight:600; margin-top:5px;
+  font-variant-numeric:tabular-nums; text-shadow:0 1px 3px rgba(0,0,0,.5)}
+.tile .name{font-weight:600; font-size:14.5px; line-height:1.25; color:var(--ink)}
+.tile .flag{position:absolute; top:8px; right:8px; background:var(--have); color:var(--on-have);
+  border-radius:50%; width:26px; height:26px; display:grid; place-items:center;
+  box-shadow:0 2px 6px rgba(0,0,0,.35)}
+
+.tile.add .art{display:grid; place-items:center; background:var(--card);
+  border:2px dashed var(--rule); box-shadow:none; color:var(--ink-2)}
+.tile.add .art span{font-weight:600; font-size:14px; text-align:center; padding:0 10px; margin-top:8px}
+.tile.add:active .art{border-color:var(--blue); color:var(--blue)}
+
+/* ---------- détail d'une série ---------- */
+.hero{display:flex; gap:14px; margin-bottom:6px}
+.hero .art{flex:none; width:108px; aspect-ratio:2/3; border-radius:10px; overflow:hidden;
+  background:var(--sunk); box-shadow:var(--shadow-lift); position:relative}
+.hero .art img{width:100%; height:100%; object-fit:cover}
+.hero .meta{flex:1; min-width:0; display:flex; flex-direction:column; justify-content:center; gap:9px}
+.hero h2{font:600 28px/.98 var(--f-disp); text-transform:uppercase; letter-spacing:.015em}
+.hero .sub{font-size:14.5px; color:var(--ink-2); margin:0}
+.hero .sub b{font:800 25px/1 var(--f-disp); color:var(--blue); font-variant-numeric:tabular-nums;
+  margin-right:4px}
+.pbar{display:block; height:9px; border-radius:5px; background:var(--sunk); overflow:hidden}
+.pbar i{display:block; height:100%; background:var(--blue); border-radius:5px; transition:width .25s}
+.pbar.full i{background:var(--have)}
+
+.back{display:inline-flex; align-items:center; gap:7px; font-weight:600; font-size:15px;
+  color:var(--blue); padding:10px 13px 10px 8px; margin:0 0 10px -8px; border-radius:10px}
+.section-label{font:600 12px/1 var(--f-body); text-transform:uppercase; letter-spacing:.1em;
+  color:var(--gold); margin:24px 0 9px; padding-top:15px; border-top:1px solid var(--rule)}
+.section-label.plain{color:var(--ink-2); border-top-color:transparent; padding-top:4px}
+
+/* ---------- lignes d'album ---------- */
+.albums{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:7px}
+.albums.fade li{transition:opacity .2s, transform .2s}
+.al{width:100%; display:flex; align-items:center; gap:13px; text-align:left;
+  background:var(--card); border:1px solid var(--rule); border-radius:12px;
+  padding:12px 14px; min-height:60px; transition:background .12s,border-color .12s,transform .1s}
+.al:active{transform:scale(.99)}
+.al .num{flex:none; min-width:30px; font-variant-numeric:tabular-nums; font-weight:600;
+  font-size:14px; color:var(--ink-2); text-align:right}
+.al .ttl{flex:1; min-width:0; font-size:16.5px; line-height:1.3; text-wrap:pretty}
+.al .srs{display:block; font-size:13.5px; color:var(--ink-2); margin-top:2px}
+.al .tick{flex:none; width:31px; height:31px; border-radius:50%; border:2px solid var(--rule);
+  display:grid; place-items:center; color:transparent; transition:background .12s,border-color .12s}
+.al[aria-pressed="true"]{background:var(--have-bg);
+  border-color:color-mix(in srgb,var(--have) 35%,transparent)}
+.al[aria-pressed="true"] .num{color:var(--have)}
+.al[aria-pressed="true"] .ttl{font-weight:500}
+.al[aria-pressed="true"] .tick{background:var(--have); border-color:var(--have); color:var(--on-have)}
+.verdict{flex:none; font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em;
+  padding:6px 9px; border-radius:7px; white-space:nowrap; color:var(--want); background:var(--want-bg)}
+.al[aria-pressed="true"] .verdict{color:var(--have); background:var(--card)}
+
+.group-head{display:flex; align-items:center; gap:10px; margin:22px 0 9px; padding-top:15px;
+  border-top:1px solid var(--rule)}
+.group-head .thumb{flex:none; width:34px; aspect-ratio:2/3; border-radius:5px; overflow:hidden;
+  background:var(--sunk)}
+.group-head .thumb img{width:100%; height:100%; object-fit:cover}
+.group-head .gt{flex:1; min-width:0; font-weight:600; font-size:15.5px}
+.group-head .gn{font-size:13px; color:var(--ink-2); white-space:nowrap; font-variant-numeric:tabular-nums}
+
+/* ---------- formulaires / panneau ---------- */
+#add-serie{scroll-margin-top:170px}
+.panel{background:var(--card); border:1px solid var(--rule); border-radius:14px; padding:16px;
+  box-shadow:var(--shadow); display:grid; gap:12px; margin-bottom:16px}
+.panel h3{font:600 22px/1 var(--f-disp); text-transform:uppercase; letter-spacing:.015em}
+.field{display:flex; gap:9px}
+input[type=text]{font:400 16.5px var(--f-body); color:var(--ink); background:var(--card-2);
+  border:1.5px solid var(--rule); border-radius:11px; padding:13px; min-width:0; flex:1}
+input[type=text]:focus{border-color:var(--blue); outline:none}
+input.num{width:72px; flex:none; text-align:center; font-variant-numeric:tabular-nums}
+textarea{font:400 16px/1.45 var(--f-body); color:var(--ink); background:var(--card-2);
+  border:1.5px solid var(--rule); border-radius:11px; padding:12px; width:100%;
+  min-height:112px; resize:vertical}
+textarea:focus{border-color:var(--blue); outline:none}
+details{border-top:1px solid var(--rule); padding-top:10px}
+details summary{cursor:pointer; font-size:14.5px; font-weight:600; color:var(--blue);
+  padding:6px 0; list-style:none; min-height:36px; display:flex; align-items:center}
+details summary::-webkit-details-marker{display:none}
+.ae-add{flex:none; width:54px; padding:0; display:grid; place-items:center; font-size:24px;
+  color:var(--blue); line-height:1}
+.btns{display:flex; gap:9px; flex-wrap:wrap}
+.btn{padding:13px 18px; border-radius:11px; font-weight:600; font-size:15px;
+  border:1.5px solid var(--rule); min-height:48px}
+.btn.pri{background:var(--blue); border-color:var(--blue); color:var(--on-blue)}
+.btn.pri:disabled{opacity:.45; cursor:default}
+.btn.wide{flex:1; justify-content:center; display:flex; align-items:center; gap:7px}
+.btn.danger{color:var(--want); border-color:color-mix(in srgb,var(--want) 40%,transparent)}
+.note{font-size:13.5px; color:var(--ink-2); margin:0; line-height:1.4}
+.note.warn{color:var(--gold); font-weight:500}
+.spin{width:17px;height:17px;border:2.5px solid var(--rule);border-top-color:var(--blue);
+  border-radius:50%;animation:sp .7s linear infinite;flex:none}
+@keyframes sp{to{transform:rotate(360deg)}}
+.prop{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:6px;
+  max-height:46vh; overflow:auto; -webkit-overflow-scrolling:touch}
+.prop li{display:flex; align-items:center; gap:10px; background:var(--card-2);
+  border:1px solid var(--rule); border-radius:10px; padding:10px 12px}
+.prop .pn{font-variant-numeric:tabular-nums; font-weight:600; font-size:13.5px; color:var(--ink-2);
+  min-width:24px; text-align:right}
+.prop .pt{flex:1; min-width:0; font-size:15.5px}
+.prop .rm{flex:none; width:34px; height:34px; border-radius:50%; color:var(--ink-2); font-size:19px;
+  display:grid; place-items:center}
+
+/* ---------- bilan ---------- */
+.stats{display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:24px}
+.stat{background:var(--card); border:1px solid var(--rule); border-radius:14px; padding:15px;
+  box-shadow:var(--shadow)}
+.stat .k{font:800 38px/.9 var(--f-disp); color:var(--blue); font-variant-numeric:tabular-nums}
+.stat .l{font-size:13px; color:var(--ink-2); margin-top:5px}
+.stat.gold .k{color:var(--gold)}
+.stat.have .k{color:var(--have)}
+
+.empty{text-align:center; color:var(--ink-2); padding:48px 16px; font-size:15.5px}
+.empty strong{display:block; color:var(--ink); font-size:18px; margin-bottom:6px; font-weight:600}
+
+/* ---------- onglets ---------- */
+.tabs{position:fixed; left:0; right:0; bottom:0; z-index:25; background:var(--card);
+  border-top:1px solid var(--rule); display:flex;
+  padding-left:max(8px,env(safe-area-inset-left,0px));
+  padding-right:max(8px,env(safe-area-inset-right,0px));
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+.tab{flex:1; display:flex; flex-direction:column; align-items:center; gap:3px;
+  padding:10px 4px 11px; color:var(--ink-2); font-size:12px; font-weight:600}
+.tab svg{width:23px; height:23px}
+.tab[aria-current="page"]{color:var(--blue)}
+.tab .cnt{font-variant-numeric:tabular-nums}
+
+@media (min-width:560px){ .brand h1{font-size:32px} .hero h2{font-size:34px} .hero .art{width:132px}
+  .stats{grid-template-columns:repeat(4,1fr)} }
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <div class="brand">
+      <h1>Ma collection de BD</h1>
+      <p class="tally"><b id="t-own">—</b> / <span class="tnum" id="t-tot">—</span></p>
+    </div>
+    <div class="search">
+      <span class="ico" aria-hidden="true"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg></span>
+      <input id="q" type="search" autocomplete="off" enterkeyhint="search"
+             placeholder="Un titre ? Tapez-le ici" aria-label="Chercher un album ou une série">
+      <button class="clr" id="q-clear" hidden aria-label="Effacer la recherche">×</button>
+    </div>
+    <p class="sync" id="sync" data-s="local"><span class="dot"></span><span id="sync-t">Chargement…</span></p>
+  </div>
+</header>
+
+<main id="main">
+  <section id="v-search" hidden aria-label="Résultats de recherche"></section>
+  <section id="v-shelf" hidden aria-label="Ma collection"></section>
+  <section id="v-detail" hidden aria-label="Détail d'une série"></section>
+  <section id="v-missing" hidden aria-label="Albums à trouver"></section>
+  <section id="v-stats" hidden aria-label="Bilan"></section>
+</main>
+
+<nav class="tabs" aria-label="Navigation">
+  <button class="tab" data-tab="shelf" aria-current="page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h5v16H4zM10.5 4h5v16h-5z"/><path d="m17 4.6 4 1.1-3.4 15.1-4-1.1z"/></svg>
+    <span>Ma collection</span>
+  </button>
+  <button class="tab" data-tab="missing">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 7h14M5 12h14M5 17h7"/><path d="M17.5 15.5v5M15 18h5"/></svg>
+    <span>À trouver <span class="cnt" id="tab-missing"></span></span>
+  </button>
+  <button class="tab" data-tab="stats">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>
+    <span>Bilan</span>
+  </button>
+</nav>
+
+<script>
+const CATALOGUE = [{"id":"achille-talon","name":"Achille Talon","albums":[{"k":"0.1","n":1,"t":"Les idées d'Achille Talon cerveau-choc !","s":null,"o":false},{"k":"0.2","n":2,"t":"Achille Talon aggrave son cas !","s":null,"o":false},{"k":"0.3","n":3,"t":"Achille Talon persiste et signe !","s":null,"o":false},{"k":"0.4","n":4,"t":"Achille Talon... mon fils à moi !","s":null,"o":false},{"k":"0.5","n":5,"t":"L'indispensable Achille Talon","s":null,"o":false},{"k":"0.6","n":6,"t":"Achille Talon au pouvoir","s":null,"o":false},{"k":"0.7","n":7,"t":"Les insolences d'Achille Talon","s":null,"o":false},{"k":"0.8","n":8,"t":"Achille Talon méprise l'obstacle","s":null,"o":false},{"k":"0.9","n":9,"t":"Les petits desseins d'Achille Talon","s":null,"o":false},{"k":"0.10","n":10,"t":"Le roi de la science-diction","s":null,"o":false},{"k":"0.11","n":11,"t":"Brave et honnête Achille Talon","s":null,"o":false},{"k":"0.12","n":12,"t":"Achille Talon au coin du feu…","s":null,"o":false},{"k":"0.13","n":13,"t":"Pas de pitié pour Achille Talon","s":null,"o":false},{"k":"0.14","n":14,"t":"Achille Talon et le mystère de l'homme à deux têtes","s":null,"o":false},{"k":"0.15","n":15,"t":"Achille Talon et le quadrumane optimiste","s":null,"o":false},{"k":"0.16","n":16,"t":"Achille Talon et le trésor de Virgule","s":null,"o":false},{"k":"0.17","n":17,"t":"Le roi des Zôtres","s":null,"o":false},{"k":"0.18","n":18,"t":"Achille Talon et le coquin de sort","s":null,"o":false},{"k":"0.19","n":19,"t":"Achille Talon et le grain de la folie","s":null,"o":false},{"k":"0.20","n":20,"t":"Viva Papa!","s":null,"o":false},{"k":"0.21","n":21,"t":"Ma vie à moi","s":null,"o":false},{"k":"0.22","n":22,"t":"Le sort s'acharne sur Achille Talon","s":null,"o":false},{"k":"0.23","n":23,"t":"Achille Talon et la main du serpent","s":null,"o":false},{"k":"0.24","n":24,"t":"Achille Talon et l'âge ingrat","s":null,"o":false},{"k":"0.25","n":25,"t":"Achille Talon et l'esprit d'Éloi","s":null,"o":false},{"k":"0.26","n":26,"t":"Achille Talon et l'arme du crocodile","s":null,"o":false},{"k":"0.27","n":27,"t":"Ne revons pas !","s":null,"o":false},{"k":"0.28","n":28,"t":"L'insubmersible Achille Talon","s":null,"o":false},{"k":"0.29","n":29,"t":"Achille Talon et la loi du Bidouble","s":null,"o":true},{"k":"0.30","n":30,"t":"Achille Talon a un gros nez Ah ! Ah ! Ah !","s":null,"o":false},{"k":"0.31","n":31,"t":"Il n'y a (Dieu merci) qu'un seul Achille Talon","s":null,"o":false},{"k":"0.32","n":32,"t":"Achille Talon et la traversée du disert","s":null,"o":false},{"k":"0.33","n":33,"t":"Achille Talon et la vie secrète du journal... Polite !","s":null,"o":false},{"k":"0.34","n":34,"t":"L'incorrigible Achille Talon","s":null,"o":false},{"k":"0.35","n":35,"t":"Achille Talon... à bout portant !","s":null,"o":false},{"k":"0.36","n":36,"t":"Achille Talon n'a pas tout dit...","s":null,"o":false},{"k":"0.37","n":37,"t":"Achille Talon et l'archipel de Sanzunron","s":null,"o":false},{"k":"0.38","n":38,"t":"Achille Talon contre docteur Chacal et Mister Bide !","s":null,"o":false},{"k":"0.39","n":39,"t":"Talon (Ach!lle, pour les dames) 06/1989","s":null,"o":false},{"k":"0.40","n":40,"t":"Achille Talon et le monstre de l'Étang Tacule !","s":null,"o":false},{"k":"0.41","n":41,"t":"Achille Talon et l'Appeau d'Éphèse","s":null,"o":false},{"k":"0.42","n":42,"t":"Le musée","s":null,"o":false},{"k":"0.43","n":43,"t":"Achille Talon a la main verte","s":null,"o":false},{"k":"0.44","n":44,"t":"Tout va bien !","s":null,"o":false},{"k":"0.45","n":45,"t":"Le maître est Talon","s":null,"o":false},{"k":"0.46","n":46,"t":"Le monde merveilleux du journal Polite","s":null,"o":false},{"k":"0.47","n":47,"t":"Achille Talon crève l'écran","s":null,"o":false},{"k":"0.48","n":48,"t":"Achille Talon n'arrête pas le progrès","s":null,"o":false}],"cover":"d792c28390019f20293adc57e7ac799c"},{"id":"agatha-christie","name":"Agatha Christie","albums":[{"k":"0.1","n":1,"t":"Le Secret de Chimneys","s":null,"o":true},{"k":"0.2","n":2,"t":"Mort sur le Nil","s":null,"o":true},{"k":"0.3","n":3,"t":"Dix Petits Nègres","s":null,"o":true},{"k":"0.4","n":4,"t":"Le Crime de L'Orient-Express","s":null,"o":true},{"k":"0.5","n":5,"t":"Mister Brown","s":null,"o":true},{"k":"0.6","n":6,"t":"La Nuit qui ne finit pas","s":null,"o":false},{"k":"0.7","n":7,"t":"Le Crime du Golf","s":null,"o":false},{"k":"0.8","n":8,"t":"Le Meurtre de Roger Ackroyd","s":null,"o":false},{"k":"0.9","n":9,"t":"L'Affaire Protheroe","s":null,"o":false},{"k":"0.10","n":10,"t":"L'homme au complet marron","s":null,"o":false},{"k":"0.11","n":11,"t":"Le Train Bleu","s":null,"o":false},{"k":"0.12","n":12,"t":"Meurtre en Mésopotamie","s":null,"o":false},{"k":"0.13","n":13,"t":"Les Quatre","s":null,"o":false},{"k":"0.14","n":14,"t":"Témoin indésirable","s":null,"o":false},{"k":"0.15","n":15,"t":"Le Crime d'Halloween","s":null,"o":false},{"k":"0.16","n":16,"t":"Cartes sur table","s":null,"o":false},{"k":"0.17","n":17,"t":"Témoin muet","s":null,"o":false},{"k":"0.18","n":18,"t":"Cinq petits cochons","s":null,"o":false},{"k":"0.19","n":19,"t":"La maison du péril","s":null,"o":false},{"k":"0.20","n":20,"t":"Les Oiseaux du lac Stymphale","s":null,"o":false},{"k":"0.21","n":21,"t":"Poirot joue le jeu","s":null,"o":false},{"k":"0.22","n":22,"t":"Le couteau sur la nuque","s":null,"o":false},{"k":"0.23","n":23,"t":"Les Vacances d'Hercule Poirot","s":null,"o":false},{"k":"0.24","n":24,"t":"Rendez-vous avec la mort","s":null,"o":false}],"cover":"533fdb518384b7a616b5c47936b5f43d"},{"id":"alain-chevalier","name":"Alain Chevalier","albums":[{"k":"0.1","n":1,"t":"Les rivaux","s":null,"o":true},{"k":"0.2","n":2,"t":"Team de la mort","s":null,"o":false},{"k":"0.3","n":3,"t":"Forcing dans la neige","s":null,"o":false},{"k":"0.4","n":4,"t":"Attentat en formule 1","s":null,"o":false},{"k":"0.5","n":5,"t":"Le francais errant","s":null,"o":true},{"k":"0.6","n":6,"t":"L'heritier","s":null,"o":false},{"k":"0.7","n":7,"t":"Sous le signe indien","s":null,"o":true},{"k":"0.8","n":8,"t":"Fleaux sur le rallye des pharaons","s":null,"o":true},{"k":"0.9","n":9,"t":"Come back","s":null,"o":false},{"k":"0.10","n":10,"t":"Pole position","s":null,"o":false},{"k":"0.11","n":11,"t":"Enfer pour un champion","s":null,"o":false},{"k":"0.12","n":12,"t":"La course diabolique","s":null,"o":true},{"k":"0.13","n":13,"t":"Tournoi pour 500","s":null,"o":false},{"k":"0.14","n":14,"t":"Les pirates de la route","s":null,"o":false},{"k":"0.15","n":15,"t":"Safari pour zombis","s":null,"o":false},{"k":"0.16","n":16,"t":"Le virus de la peur","s":null,"o":false},{"k":"0.17","n":17,"t":"Duel auto moto","s":null,"o":false}]},{"id":"aria","name":"Aria","albums":[{"k":"0.1","n":1,"t":"La fugue d'Aria","s":null,"o":false},{"k":"0.2","n":2,"t":"La montagne aux sorciers","s":null,"o":false},{"k":"0.3","n":3,"t":"La septième porte","s":null,"o":false},{"k":"0.4","n":4,"t":"Les chevaliers d'Aquarius","s":null,"o":false},{"k":"0.5","n":5,"t":"Les larmes de la déesse","s":null,"o":false},{"k":"0.6","n":6,"t":"L'anneau des Elflings","s":null,"o":false},{"k":"0.7","n":7,"t":"Le tribunal des corbeaux","s":null,"o":false},{"k":"0.8","n":8,"t":"Le méridien de posidonia","s":null,"o":false},{"k":"0.9","n":9,"t":"Le Combat des dames","s":null,"o":false},{"k":"0.10","n":10,"t":"Œil d'ange","s":null,"o":false},{"k":"0.11","n":11,"t":"Les indomptables","s":null,"o":true},{"k":"0.12","n":12,"t":"Janessandre","s":null,"o":false},{"k":"0.13","n":13,"t":"Le cri du prophète","s":null,"o":false},{"k":"0.14","n":14,"t":"Le voleur de lumière","s":null,"o":false},{"k":"0.15","n":15,"t":"Vendéric","s":null,"o":false},{"k":"0.16","n":16,"t":"Ove","s":null,"o":false},{"k":"0.17","n":17,"t":"La vestale de Satan","s":null,"o":false},{"k":"0.18","n":18,"t":"Vénus en colère","s":null,"o":false},{"k":"0.19","n":19,"t":"Sacristar","s":null,"o":false},{"k":"0.20","n":20,"t":"La fleur au ventre","s":null,"o":false},{"k":"0.21","n":21,"t":"La griffe de l'ange","s":null,"o":true},{"k":"0.22","n":22,"t":"La voie des rats","s":null,"o":false},{"k":"0.23","n":23,"t":"Le poussar","s":null,"o":false},{"k":"0.24","n":24,"t":"L'âme captive","s":null,"o":false},{"k":"0.25","n":25,"t":"Florineige","s":null,"o":false},{"k":"0.26","n":26,"t":"Le jardin de Baohm","s":null,"o":false},{"k":"0.27","n":27,"t":"Chant d'étoile","s":null,"o":false},{"k":"0.28","n":28,"t":"L'élixir du diable","s":null,"o":false},{"k":"0.29","n":29,"t":"La poupée aux yeux de lune","s":null,"o":false},{"k":"0.30","n":30,"t":"Renaissance","s":null,"o":false},{"k":"0.31","n":31,"t":"La Mamaïtha","s":null,"o":false},{"k":"0.32","n":32,"t":"Le diable recomposé","s":null,"o":false},{"k":"0.33","n":33,"t":"Les rescapés du souvenir","s":null,"o":false},{"k":"0.34","n":34,"t":"Le ventre de la mort","s":null,"o":false},{"k":"0.35","n":35,"t":"Le pouvoir des cendres","s":null,"o":false},{"k":"0.36","n":36,"t":"Le Chemin des crêtes","s":null,"o":false},{"k":"0.37","n":37,"t":"Faîtes taire l'accusée","s":null,"o":false},{"k":"0.38","n":38,"t":"Le trône du diable","s":null,"o":false}],"cover":"f2ac4f31b6f647bdee98f9277a0bf492"},{"id":"asterix","name":"Astérix","albums":[{"k":"0.1","n":1,"t":"Astérix le gaulois","s":null,"o":true},{"k":"0.2","n":2,"t":"La serpe d'or","s":null,"o":true},{"k":"0.3","n":3,"t":"Astérix et les Goths","s":null,"o":true},{"k":"0.4","n":4,"t":"Astérix Gladiateur","s":null,"o":true},{"k":"0.5","n":5,"t":"Le tour de Gaule","s":null,"o":true},{"k":"0.6","n":6,"t":"Astérix et Cléopâtre","s":null,"o":true},{"k":"0.7","n":7,"t":"Le combat des chefs","s":null,"o":true},{"k":"0.8","n":8,"t":"Astérix chez les Bretons","s":null,"o":true},{"k":"0.9","n":9,"t":"Astérix et les Normands","s":null,"o":true},{"k":"0.10","n":10,"t":"Astérix Légionnaire","s":null,"o":true},{"k":"0.11","n":11,"t":"Le bouclier Arverne","s":null,"o":true},{"k":"0.12","n":12,"t":"Astérix aux jeux Olympiques","s":null,"o":true},{"k":"0.13","n":13,"t":"Astérix et le chaudron","s":null,"o":true},{"k":"0.14","n":14,"t":"Astérix en Hispanie","s":null,"o":false},{"k":"0.15","n":15,"t":"La zizanie","s":null,"o":false},{"k":"0.16","n":16,"t":"Astérix chez les Helvètes","s":null,"o":true},{"k":"0.17","n":17,"t":"Le domaine des dieux","s":null,"o":true},{"k":"0.18","n":18,"t":"Les lauriers de César","s":null,"o":true},{"k":"0.19","n":19,"t":"Le devin","s":null,"o":false},{"k":"0.20","n":20,"t":"Astérix en Corse","s":null,"o":false},{"k":"0.21","n":21,"t":"Le cadeau de César","s":null,"o":true},{"k":"0.22","n":22,"t":"La grande traversée","s":null,"o":true},{"k":"0.23","n":23,"t":"Obélix et compagnie","s":null,"o":true},{"k":"0.24","n":24,"t":"Astérix chez les Belges","s":null,"o":true},{"k":"0.25","n":25,"t":"Le Grand Fossé","s":null,"o":true},{"k":"0.26","n":26,"t":"L'odyssée d'Astérix","s":null,"o":true},{"k":"0.27","n":27,"t":"Le fils d'Astérix","s":null,"o":true},{"k":"0.28","n":28,"t":"Astérix chez Rahàzade","s":null,"o":true},{"k":"0.29","n":29,"t":"La rose et le glaive","s":null,"o":true},{"k":"0.30","n":30,"t":"La galère d'Obélix","s":null,"o":true},{"k":"0.31","n":31,"t":"Astérix et Latraviata","s":null,"o":true},{"k":"0.32","n":32,"t":"Astérix et la rentrée gauloise","s":null,"o":true},{"k":"0.33","n":33,"t":"Le ciel lui tombe sur la tête","s":null,"o":true},{"k":"0.34","n":34,"t":"L'Anniversaire d'Astérix & Obélix - Le livre d'Or","s":null,"o":true},{"k":"0.35","n":35,"t":"Astérix chez les Pictes","s":null,"o":true},{"k":"0.36","n":36,"t":"Le papyrus de César","s":null,"o":true},{"k":"0.37","n":37,"t":"Astérix et la Transitalique","s":null,"o":true},{"k":"0.38","n":38,"t":"La Fille de Vercingetorix","s":null,"o":true},{"k":"0.39","n":39,"t":"Astérix et ses amis","s":null,"o":true},{"k":"0.40","n":40,"t":"Les 12 travaux d'Astérix","s":null,"o":true}],"cover":"2c4fafdb976580b49006e5c17cee3f57"},{"id":"blake-et-mortimer","name":"Blake et Mortimer","albums":[{"k":"0.1","n":1,"t":"Le secret de l'espadon tome 1","s":null,"o":true},{"k":"0.2","n":2,"t":"Le secret de l'espadon tome 2","s":null,"o":true},{"k":"0.3","n":3,"t":"Le secret de l'espadon tome 3","s":null,"o":true},{"k":"0.4","n":4,"t":"Le mystere de la grande pyramide tome 1","s":null,"o":false},{"k":"0.5","n":5,"t":"Le mystere de la grande pyramide tome 2","s":null,"o":false},{"k":"0.6","n":6,"t":"La marque jaune","s":null,"o":true},{"k":"0.7","n":7,"t":"L'enigme de l'atlantide","s":null,"o":true},{"k":"0.8","n":8,"t":"Sos meteores","s":null,"o":false},{"k":"0.9","n":9,"t":"Le piege diabolique","s":null,"o":true},{"k":"0.10","n":10,"t":"L'affaire du collier","s":null,"o":false},{"k":"0.11","n":11,"t":"Les 3 formules du profeseur sato tome 1","s":null,"o":false},{"k":"0.12","n":12,"t":"Les 3 formules du profeseur sato tome 2","s":null,"o":false},{"k":"0.13","n":13,"t":"L'affaire francis blake","s":null,"o":true},{"k":"0.14","n":14,"t":"La machination voranov","s":null,"o":true},{"k":"0.15","n":15,"t":"L'étrange rendez vous","s":null,"o":true},{"k":"0.16","n":16,"t":"Les sarcophages du 6 continent tome 1","s":null,"o":true},{"k":"0.17","n":17,"t":"Les sarcophages du 6 continent tome 2","s":null,"o":true},{"k":"0.18","n":18,"t":"Le sanctuaire du gondwana","s":null,"o":true},{"k":"0.19","n":19,"t":"La malediction des 30 deniers tome 1","s":null,"o":true},{"k":"0.20","n":20,"t":"La malediction des 30 deniers tome 2","s":null,"o":true},{"k":"0.21","n":21,"t":"Le serment des cinq lords","s":null,"o":true},{"k":"0.22","n":22,"t":"L'onde septimus","s":null,"o":true},{"k":"0.23","n":23,"t":"Le baton de plutarque","s":null,"o":true},{"k":"0.24","n":24,"t":"Le testament de william s","s":null,"o":true},{"k":"0.25","n":25,"t":"La vallee des immortels","s":null,"o":true},{"k":"0.26","n":26,"t":"La vallee des immortels","s":null,"o":true},{"k":"0.27","n":27,"t":"Le cri du Moloch","s":null,"o":true},{"k":"0.28","n":28,"t":"Le dernier Espadon","s":null,"o":true},{"k":"0.29","n":29,"t":"Huit heures a Berlin","s":null,"o":true},{"k":"0.30","n":30,"t":"Aventure en Cornouailles","s":null,"o":false},{"k":"0.31","n":31,"t":"Les revenants du doggerland","s":null,"o":false},{"k":"1.1","n":1,"t":"Le rayon U","s":"Hors série","o":false},{"k":"1.2","n":2,"t":"L'aventure immobile","s":"Hors série","o":false},{"k":"1.3","n":3,"t":"Le dernier Pharaon","s":"Hors série","o":true},{"k":"1.4","n":4,"t":"La fiancée du docteur Septimus","s":"Hors série","o":false},{"k":"1.5","n":5,"t":"La Fléche Ardente","s":"Hors série","o":true},{"k":"1.6","n":6,"t":"L'art de la guerre","s":"Hors série","o":true}],"cover":"42de949ab3d7b4d6387e68b26d237171"},{"id":"blueberry","name":"Blueberry","albums":[{"k":"0.1","n":1,"t":"Fort Navajo","s":null,"o":true},{"k":"0.2","n":2,"t":"Tonnerre à l'ouest","s":null,"o":true},{"k":"0.3","n":3,"t":"L'aigle solitaire","s":null,"o":true},{"k":"0.4","n":4,"t":"Le cavalier perdu","s":null,"o":true},{"k":"0.5","n":5,"t":"La piste des Navajos","s":null,"o":true},{"k":"0.6","n":6,"t":"L'homme à l'étoile d'argent","s":null,"o":true},{"k":"0.7","n":7,"t":"Le cheval de fer","s":null,"o":true},{"k":"0.8","n":8,"t":"L'homme au poing d'acier","s":null,"o":true},{"k":"0.9","n":9,"t":"La piste des Sioux","s":null,"o":true},{"k":"0.10","n":10,"t":"Général \"Tête Jaune\"","s":null,"o":true},{"k":"0.11","n":11,"t":"La mine de l'Allemand perdu","s":null,"o":true},{"k":"0.12","n":12,"t":"Le spectre aux balles d'or","s":null,"o":true},{"k":"0.13","n":13,"t":"Chihuahua Pearl","s":null,"o":true},{"k":"0.14","n":14,"t":"L'homme qui valait 500 000 $","s":null,"o":true},{"k":"0.15","n":15,"t":"Ballade pour un cercueil","s":null,"o":false},{"k":"0.16","n":16,"t":"Le hors la loi","s":null,"o":false},{"k":"0.17","n":17,"t":"Angel Face","s":null,"o":false},{"k":"0.18","n":18,"t":"Nez cassé","s":null,"o":false},{"k":"0.19","n":19,"t":"La longue marche","s":null,"o":true},{"k":"0.20","n":20,"t":"La tribu fantôme","s":null,"o":true},{"k":"0.21","n":21,"t":"La dernière carte","s":null,"o":false},{"k":"0.22","n":22,"t":"Le bout de la piste","s":null,"o":false},{"k":"0.23","n":23,"t":"Arizona love","s":null,"o":false},{"k":"0.24","n":24,"t":"Mister Blueberry","s":null,"o":true},{"k":"0.25","n":25,"t":"Ombres sur Tombstone","s":null,"o":true},{"k":"0.26","n":26,"t":"Geronimo l'Apache","s":null,"o":false},{"k":"0.27","n":27,"t":"OK Corral","s":null,"o":true},{"k":"0.28","n":28,"t":"Dust","s":null,"o":false},{"k":"0.29","n":29,"t":"BOBD. Le best of de la BD - 1109/2005","s":null,"o":false},{"k":"0.30","n":30,"t":"HC. Apaches","s":null,"o":false},{"k":"0.31","n":31,"t":"HS. Blueberry - Votre guide","s":null,"o":false},{"k":"0.32","n":32,"t":"HS. Blueberry's","s":null,"o":false},{"k":"0.33","n":33,"t":"HS. Blueberry, une légende de l'ouest","s":null,"o":false}],"cover":"2e7304cbd74cffee3e498491f74ba581"},{"id":"bob-morane","name":"Bob Morane","albums":[{"k":"0.1","n":1,"t":"L'epee du paladin","s":null,"o":true},{"k":"0.2","n":2,"t":"L'œil du samourai","s":null,"o":true},{"k":"0.3","n":3,"t":"Le temps rares","s":null,"o":false},{"k":"0.4","n":4,"t":"Le village qui n'existait pas","s":null,"o":false}],"cover":"bcf40ff708a7c86aad0dbab68ecd7b95"},{"id":"boule-et-bill","name":"Boule et Bill","albums":[{"k":"0.1","n":1,"t":"Boule et bill tome 1","s":null,"o":true},{"k":"0.2","n":2,"t":"Boule et bill tome 2","s":null,"o":false},{"k":"0.3","n":3,"t":"Boule et bill tome 3","s":null,"o":false},{"k":"0.4","n":4,"t":"Boule et bill tome 4","s":null,"o":false},{"k":"0.5","n":5,"t":"Boule et bill tome 5","s":null,"o":false},{"k":"0.6","n":6,"t":"Boule et bill tome 6","s":null,"o":true},{"k":"0.7","n":7,"t":"Boule et bill tome 7","s":null,"o":false},{"k":"0.8","n":8,"t":"Boule et bill tome 8","s":null,"o":false},{"k":"0.9","n":9,"t":"Boule et bill tome 9","s":null,"o":false},{"k":"0.10","n":10,"t":"Boule et bill tome 10","s":null,"o":false},{"k":"0.11","n":11,"t":"Boule et bill tome 11","s":null,"o":false},{"k":"0.12","n":12,"t":"Boule et bill tome 12","s":null,"o":false},{"k":"0.13","n":13,"t":"Boule et bill tome 13","s":null,"o":false},{"k":"0.14","n":14,"t":"Boule et bill tome 14","s":null,"o":false},{"k":"0.15","n":15,"t":"Boule et bill tome 15","s":null,"o":false},{"k":"0.16","n":16,"t":"Boule et bill tome 16","s":null,"o":false},{"k":"0.17","n":17,"t":"Boule et bill tome 17","s":null,"o":false},{"k":"0.18","n":18,"t":"Boule et bill tome 18","s":null,"o":false},{"k":"0.19","n":19,"t":"Boule et bill tome 19","s":null,"o":false},{"k":"0.20","n":20,"t":"Boule et bill tome 20","s":null,"o":false},{"k":"0.21","n":21,"t":"Boule et bill tome 21","s":null,"o":false},{"k":"0.22","n":22,"t":"Boule et bill tome 22","s":null,"o":false},{"k":"0.23","n":23,"t":"Boule et bill tome 23","s":null,"o":false},{"k":"0.24","n":24,"t":"Boule et bill tome 24","s":null,"o":false},{"k":"0.25","n":25,"t":"Boule et bill tome 25","s":null,"o":false},{"k":"0.26","n":26,"t":"Boule et bill tome 26","s":null,"o":false},{"k":"0.27","n":27,"t":"Boule et bill tome 27","s":null,"o":false},{"k":"0.28","n":28,"t":"Les quatres saisons","s":null,"o":true},{"k":"0.29","n":29,"t":"Quel cirque","s":null,"o":false},{"k":"0.30","n":30,"t":"La bande a billll","s":null,"o":true},{"k":"0.31","n":31,"t":"Graine de cocker","s":null,"o":false},{"k":"0.32","n":32,"t":"Mon meilleur ami","s":null,"o":false},{"k":"0.33","n":33,"t":"A l'abordage","s":null,"o":false},{"k":"0.34","n":34,"t":"Un amour de cocker","s":null,"o":false},{"k":"0.35","n":35,"t":"Roule ma poule","s":null,"o":false},{"k":"0.36","n":36,"t":"Flair de cocker","s":null,"o":false},{"k":"0.37","n":37,"t":"Billl est un gros rapporteur","s":null,"o":false},{"k":"0.38","n":38,"t":"Symphonie en billl majeur","s":null,"o":false},{"k":"0.39","n":39,"t":"Boule et Bill n°1","s":null,"o":false},{"k":"0.40","n":40,"t":"Boule et Bill n°2","s":null,"o":false},{"k":"0.41","n":41,"t":"Boule et Bill n°3","s":null,"o":false},{"k":"0.42","n":42,"t":"Boule et Bill n°4","s":null,"o":false},{"k":"0.43","n":43,"t":"Boule et Bill n°5","s":null,"o":false},{"k":"0.44","n":44,"t":"Boule et Bill n°6","s":null,"o":false},{"k":"0.45","n":45,"t":"Album N° 7 des gags de Boule et Bill","s":null,"o":false},{"k":"0.46","n":46,"t":"Papa, Maman, Boule... ...et Moi ! et Nous !","s":null,"o":false},{"k":"0.47","n":47,"t":"Une vie de chien !","s":null,"o":false},{"k":"0.48","n":48,"t":"Attention chien marrant !","s":null,"o":false},{"k":"0.49","n":49,"t":"Jeux de Bill","s":null,"o":false},{"k":"0.50","n":50,"t":"Ce coquin de cocker","s":null,"o":true},{"k":"0.51","n":51,"t":"Carnet de Bill","s":null,"o":false},{"k":"0.52","n":52,"t":"Ras le Bill !","s":null,"o":false},{"k":"0.53","n":53,"t":"Bill, nom d'un chien !","s":null,"o":false},{"k":"0.54","n":54,"t":"Souvenirs de famille","s":null,"o":false},{"k":"0.55","n":55,"t":"Tu te rappelles, Bill ?","s":null,"o":false},{"k":"0.56","n":56,"t":"Bill est maboul","s":null,"o":false},{"k":"0.57","n":57,"t":"Boule et Bill globe trotters","s":null,"o":false},{"k":"0.58","n":58,"t":"Strip-Cocker","s":null,"o":true},{"k":"0.59","n":59,"t":"Billets de Bill","s":null,"o":false},{"k":"0.60","n":60,"t":"22 ! v'la Boule & Bill !","s":null,"o":false},{"k":"0.61","n":61,"t":"Faut rigoler!","s":null,"o":false},{"k":"0.62","n":62,"t":"Bwouf Allo Bill?","s":null,"o":false}],"cover":"901731b8994291b4c6ada5f79f17a475"},{"id":"buck-danny","name":"Buck Danny","albums":[{"k":"0.1","n":1,"t":"Les Japs attaquent","s":null,"o":true},{"k":"0.2","n":2,"t":"Les mystères de Midway","s":null,"o":true},{"k":"0.3","n":3,"t":"La revanche des fils du ciel","s":null,"o":true},{"k":"0.4","n":4,"t":"Tigres volants","s":null,"o":false},{"k":"0.5","n":5,"t":"Dans les griffes du Dragon Noir","s":null,"o":false},{"k":"0.6","n":6,"t":"Attaque en Birmanie","s":null,"o":false},{"k":"0.7","n":7,"t":"Les Trafiquants de la mer Rouge","s":null,"o":false},{"k":"0.8","n":8,"t":"Les pirates du désert","s":null,"o":false},{"k":"0.9","n":9,"t":"Les gangsters du pétrole","s":null,"o":false},{"k":"0.10","n":10,"t":"Pilotes d'essai","s":null,"o":false},{"k":"0.11","n":11,"t":"Ciel de Corée","s":null,"o":false},{"k":"0.12","n":12,"t":"Avions sans pilotes01/1954","s":null,"o":true},{"k":"0.13","n":13,"t":"Un avion n'est pas rentré01/1954","s":null,"o":true},{"k":"0.14","n":14,"t":"Patrouille à l'aube01/1955","s":null,"o":false},{"k":"0.15","n":15,"t":"\"NC-22654\" ne répond plus01/1957","s":null,"o":false},{"k":"0.16","n":16,"t":"Menace au nord01/1957","s":null,"o":false},{"k":"0.17","n":17,"t":"Buck Danny contre Lady X01/1958","s":null,"o":false},{"k":"0.18","n":18,"t":"Alerte en Malaisie01/1958","s":null,"o":false},{"k":"0.19","n":19,"t":"Le tigre de Malaisie01/1959","s":null,"o":false},{"k":"0.20","n":20,"t":"S.O.S. soucoupes volantes !01/1959","s":null,"o":false},{"k":"0.21","n":21,"t":"Un prototype a disparu01/1960","s":null,"o":false},{"k":"0.22","n":22,"t":"Top secret01/1960","s":null,"o":true},{"k":"0.23","n":23,"t":"Mission vers la vallée perdue01/1960","s":null,"o":true},{"k":"0.24","n":24,"t":"Prototype FX-1301/1961","s":null,"o":true},{"k":"0.25","n":25,"t":"Escadrille ZZ01/1961","s":null,"o":false},{"k":"0.26","n":26,"t":"Le retour des tigres volants01/1962","s":null,"o":true},{"k":"0.27","n":27,"t":"Les Tigres volants à la rescousse !01/1962","s":null,"o":true},{"k":"0.28","n":28,"t":"Tigres volants contre pirates01/1962","s":null,"o":true},{"k":"0.29","n":29,"t":"Opération \"Mercury\"01/1964","s":null,"o":true},{"k":"0.30","n":30,"t":"Les voleurs de satellites01/1964","s":null,"o":false},{"k":"0.31","n":31,"t":"X15","s":null,"o":true},{"k":"0.32","n":32,"t":"Alerte à Cap Kennedy01/1965","s":null,"o":false},{"k":"0.33","n":33,"t":"Le mystère des avions fantômes01/1966","s":null,"o":false},{"k":"0.34","n":34,"t":"Alerte atomique01/1967","s":null,"o":false},{"k":"0.35","n":35,"t":"L'escadrille de la mort01/1968","s":null,"o":false},{"k":"0.36","n":36,"t":"Les anges bleus01/1970","s":null,"o":false},{"k":"0.37","n":37,"t":"Le pilote au masque de cuir01/1971","s":null,"o":true},{"k":"0.38","n":38,"t":"La vallée de la mort verte01/1973","s":null,"o":false},{"k":"0.39","n":39,"t":"Requins en mer de Chine01/1977","s":null,"o":false},{"k":"0.40","n":40,"t":"\"Ghost Queen\"01/1979","s":null,"o":false},{"k":"0.41","n":41,"t":"Mission 'Apocalypse'05/1983","s":null,"o":true},{"k":"0.42","n":42,"t":"Les pilotes de l'enfer09/1984","s":null,"o":true},{"k":"0.43","n":43,"t":"Le feu du ciel01/1986","s":null,"o":false},{"k":"0.44","n":44,"t":"Les \"Agresseurs\"02/1988","s":null,"o":false},{"k":"0.45","n":45,"t":"Les Secrets de la mer Noire03/1994","s":null,"o":false},{"k":"0.46","n":46,"t":"L'escadrille fantôme05/1996","s":null,"o":false},{"k":"0.47","n":47,"t":"Zone interdite04/1998","s":null,"o":false},{"k":"0.48","n":48,"t":"Tonnerre sur la Cordillère04/1999","s":null,"o":false},{"k":"0.49","n":49,"t":"La Nuit du serpent10/2000","s":null,"o":true},{"k":"0.50","n":50,"t":"Sabotage au Texas12/2002","s":null,"o":true},{"k":"0.51","n":51,"t":"Mystère en Antarctique06/2005","s":null,"o":false},{"k":"0.52","n":52,"t":"Porté disparu03/2008","s":null,"o":false},{"k":"0.53","n":53,"t":"Cobra noir11/2013","s":null,"o":false},{"k":"0.54","n":54,"t":"La nuit du spectre11/2015","s":null,"o":false},{"k":"0.55","n":55,"t":"Defcon one","s":null,"o":false}],"cover":"8017c77c7c497949d80797b0e3dac6eb"},{"id":"calagan","name":"Calagan","albums":[{"k":"0.1","n":1,"t":"Rallye raid","s":null,"o":true}],"cover":"da36c7aafb7fca1abc371e8cca348846"},{"id":"carmen-cru","name":"Carmen Cru","albums":[{"k":"0.1","n":1,"t":"Rencontre du 3 eme age","s":null,"o":true},{"k":"0.2","n":2,"t":"La dame de fer","s":null,"o":true},{"k":"0.3","n":3,"t":"Vie et mœurs","s":null,"o":true},{"k":"0.4","n":4,"t":"Ni dieu ni maitre","s":null,"o":true},{"k":"0.5","n":5,"t":"L'ecorché vive","s":null,"o":true}],"cover":"096354246edb79060f43e6c8484cbb5e"},{"id":"cedric","name":"Cédric","albums":[{"k":"0.1","n":1,"t":"Terrains minets","s":null,"o":true},{"k":"0.2","n":2,"t":"Ou sont les freins","s":null,"o":true},{"k":"0.3","n":3,"t":"Enfins seuls","s":null,"o":true}],"cover":"0ab2c020b367b437cfad8c3fd3003902"},{"id":"charly-la-rouille","name":"Charly la Rouille","albums":[{"k":"0.1","n":1,"t":"Charly la rouille","s":null,"o":true}]},{"id":"claire-bretecher","name":"Claire Bretécher","albums":[{"k":"0.1","n":1,"t":"Agripppine","s":null,"o":true}],"cover":"54e09ee42b448ef03f02cfd3192014c0"},{"id":"dan-cooper","name":"Dan Cooper","albums":[{"k":"0.1","n":1,"t":"Le triangle bleu","s":null,"o":false},{"k":"0.2","n":2,"t":"Le maître du soleil","s":null,"o":false},{"k":"0.3","n":3,"t":"Le mur du silence","s":null,"o":false},{"k":"0.4","n":4,"t":"Cap sur Mars","s":null,"o":false},{"k":"0.5","n":5,"t":"Duel dans le ciel","s":null,"o":true},{"k":"0.6","n":6,"t":"Coup d'audace","s":null,"o":true},{"k":"0.7","n":7,"t":"L'escadrille des Jaguars","s":null,"o":false},{"k":"0.8","n":8,"t":"Le secret de Dan Cooper","s":null,"o":false},{"k":"0.9","n":9,"t":"3 Cosmonautes","s":null,"o":true},{"k":"0.10","n":10,"t":"Fantôme 3 ne répond plus!","s":null,"o":false},{"k":"0.11","n":11,"t":"Acrobates du Ciel","s":null,"o":false},{"k":"0.12","n":12,"t":"Tigres de mer","s":null,"o":false},{"k":"0.13","n":13,"t":"Le mystère des soucoupes volantes","s":null,"o":false},{"k":"0.14","n":14,"t":"Panique à \"Cap Kennedy\"","s":null,"o":false},{"k":"0.15","n":15,"t":"Les hommes aux ailes d'or","s":null,"o":false},{"k":"0.16","n":16,"t":"SOS dans l'espace","s":null,"o":false},{"k":"0.17","n":17,"t":"Ciel de Norvège","s":null,"o":false},{"k":"0.18","n":18,"t":"Les pilotes perdus","s":null,"o":true},{"k":"0.19","n":19,"t":"Apollo appelle Soyouz","s":null,"o":false},{"k":"0.20","n":20,"t":"L'affaire Minos","s":null,"o":false},{"k":"0.21","n":21,"t":"Objectif Jumbo","s":null,"o":false},{"k":"0.22","n":22,"t":"Crash dans le 135 !","s":null,"o":false},{"k":"0.23","n":23,"t":"Opération Jupiter","s":null,"o":false},{"k":"0.24","n":24,"t":"Azimut zéro","s":null,"o":false},{"k":"0.25","n":25,"t":"Le canon de l'espace","s":null,"o":true},{"k":"0.26","n":26,"t":"Opération Kosmos 990","s":null,"o":true},{"k":"0.27","n":27,"t":"Programme F-18","s":null,"o":false},{"k":"0.28","n":28,"t":"F-111 en péril","s":null,"o":true},{"k":"0.29","n":29,"t":"L'aviatrice sans nom","s":null,"o":true},{"k":"0.30","n":30,"t":"Pilotes sans uniforme","s":null,"o":true},{"k":"0.31","n":31,"t":"Navette spatiale","s":null,"o":true},{"k":"0.32","n":32,"t":"Viking connection","s":null,"o":true},{"k":"0.33","n":33,"t":"Target","s":null,"o":false},{"k":"0.34","n":34,"t":"\"Silver fox\"","s":null,"o":false},{"k":"0.35","n":35,"t":"Dragon Lady","s":null,"o":false},{"k":"0.36","n":36,"t":"L'avion invisible","s":null,"o":false},{"k":"0.37","n":37,"t":"La vrille","s":null,"o":false},{"k":"0.38","n":38,"t":"Pilotes fantômes","s":null,"o":false},{"k":"0.39","n":39,"t":"L'otage du Clemenceau","s":null,"o":true},{"k":"0.40","n":40,"t":"Alerte sur le \"Clem\"","s":null,"o":false},{"k":"0.41","n":41,"t":"L'œil du tigre","s":null,"o":false}],"cover":"5763ecd7934c17261f037619c810c522"},{"id":"droit-au-but","name":"Droit au but","albums":[{"k":"0.1","n":1,"t":"Droit au but","s":null,"o":true},{"k":"0.2","n":2,"t":"Le foot au cœur","s":null,"o":false},{"k":"0.3","n":3,"t":"Fou de foot","s":null,"o":false},{"k":"0.4","n":4,"t":"Premier pas au vélodrome","s":null,"o":false},{"k":"0.5","n":5,"t":"Nino a la coupe du monde","s":null,"o":false},{"k":"0.6","n":6,"t":"L'OM dans la peau","s":null,"o":false},{"k":"0.7","n":7,"t":"La malecdiction de Nino","s":null,"o":false},{"k":"0.8","n":8,"t":"Si tu vas à RIO","s":null,"o":false},{"k":"0.9","n":9,"t":"Nino et son meilleur ennemi","s":null,"o":false},{"k":"0.10","n":10,"t":"Droit devant","s":null,"o":false},{"k":"0.11","n":11,"t":"La Victoire au bout des crampons","s":null,"o":false},{"k":"0.12","n":12,"t":"Dans la cour des grands","s":null,"o":false},{"k":"0.13","n":13,"t":"Pour Nino","s":null,"o":false},{"k":"0.14","n":14,"t":"En route pour la finale","s":null,"o":false},{"k":"0.15","n":15,"t":"Le foot au sommet","s":null,"o":false},{"k":"0.16","n":16,"t":"Rebondir","s":null,"o":false},{"k":"0.17","n":17,"t":"Challenge","s":null,"o":false},{"k":"0.18","n":18,"t":"Mandanda tous avec toi","s":null,"o":false},{"k":"0.19","n":19,"t":"Adieu Marseille","s":null,"o":true},{"k":"0.20","n":20,"t":"L'Amour du Maillot","s":null,"o":true}],"cover":"846df30e4eb73839cb9b93cf7828cd65"},{"id":"durango","name":"Durango","albums":[{"k":"0.1","n":1,"t":"Les forces de la colere","s":null,"o":true},{"k":"0.2","n":2,"t":"Piege pour un tueurs","s":null,"o":true},{"k":"0.3","n":3,"t":"Les chiens meurent en hiver","s":null,"o":true}],"cover":"95a2fd3fd52f26b80c64fb457c32060e"},{"id":"eric-castel","name":"Éric Castel","albums":[{"k":"0.1","n":1,"t":"Eric et les Pablitos","s":null,"o":true},{"k":"0.2","n":2,"t":"Match retour!","s":null,"o":true},{"k":"0.3","n":3,"t":"Coup dur!","s":null,"o":true},{"k":"0.4","n":4,"t":"Droit au but !","s":null,"o":true},{"k":"0.5","n":5,"t":"L'homme de la tribune F","s":null,"o":true},{"k":"0.6","n":6,"t":"Le secret de Pablito","s":null,"o":true},{"k":"0.7","n":7,"t":"La nuit de Tibidabo","s":null,"o":true},{"k":"0.8","n":8,"t":"La grande décision","s":null,"o":true},{"k":"0.9","n":9,"t":"Les cinq premières minutes","s":null,"o":true},{"k":"0.10","n":10,"t":"Pari gagné","s":null,"o":true},{"k":"0.11","n":11,"t":"Le plan de l'Argentin","s":null,"o":true},{"k":"0.12","n":12,"t":"La maison du cormoran","s":null,"o":true},{"k":"0.13","n":13,"t":"Du côté de l'Alfa","s":null,"o":true},{"k":"0.14","n":14,"t":"Cinquième but pour Lille !","s":null,"o":true},{"k":"0.15","n":15,"t":"Le message du Maltais","s":null,"o":true},{"k":"0.16","n":16,"t":"Allez les Diables Rouges","s":null,"o":true}]},{"id":"gaston-lagaffe","name":"Gaston Lagaffe","albums":[{"k":"0.1","n":1,"t":"Gaston","s":null,"o":false},{"k":"0.2","n":2,"t":"Gare aux gaffes","s":null,"o":false},{"k":"0.3","n":3,"t":"Gala de gaffes","s":null,"o":false},{"k":"0.4","n":4,"t":"Gaffes à gogo","s":null,"o":false},{"k":"0.5","n":5,"t":"Gaffes en gros","s":null,"o":false},{"k":"0.6","n":6,"t":"Les gaffes d'un gars gonflé","s":null,"o":false},{"k":"0.7","n":7,"t":"Des gaffes et des dégâts","s":null,"o":true},{"k":"0.8","n":8,"t":"Un gaffeur sachant gaffer","s":null,"o":true},{"k":"0.9","n":9,"t":"Lagaffe nous gâte","s":null,"o":true},{"k":"0.10","n":10,"t":"Le cas Lagaffe","s":null,"o":true},{"k":"0.11","n":11,"t":"Le géant de la gaffe","s":null,"o":true},{"k":"0.12","n":12,"t":"Gaffes, bévues et boulettes","s":null,"o":true},{"k":"0.13","n":13,"t":"Le gang des gaffeurs","s":null,"o":true},{"k":"0.14","n":14,"t":"Lagaffe mérite des baffes","s":null,"o":true},{"k":"0.15","n":15,"t":"La saga des gaffes","s":null,"o":true},{"k":"0.16","n":16,"t":"Gaffe à Lagaffe !","s":null,"o":true},{"k":"0.17","n":17,"t":"Gaffes et gadgets","s":null,"o":true},{"k":"0.18","n":18,"t":"Gala de gaffes à gogo","s":null,"o":true},{"k":"0.19","n":19,"t":"Le bureau des gaffes en gros","s":null,"o":false},{"k":"0.20","n":20,"t":"Gare aux gaffes du gars gonflé","s":null,"o":true},{"k":"0.21","n":21,"t":"En direct de la gaffe","s":null,"o":true},{"k":"0.22","n":22,"t":"Le Lourd Passé de Lagaffe","s":null,"o":true}],"cover":"f3f5e5c2efa964ca316e8a3259d124db"},{"id":"idees-noires","name":"Idées noires","albums":[{"k":"0.1","n":1,"t":"Tome 1","s":null,"o":true}],"cover":"fe6905c7f436b157fe5c04d93fea541f"},{"id":"il-etait-une-fois","name":"Il était une fois","albums":[{"k":"0.1","n":1,"t":"Yannick noah","s":null,"o":true}],"cover":"833984f23e4ae0f0e1da8ab9ce71e381"},{"id":"iznogoud","name":"Iznogoud","albums":[{"k":"0.1","n":1,"t":"Les complots du grand vizir iznogoud","s":null,"o":true},{"k":"0.2","n":2,"t":"Le grand vizir","s":null,"o":true}],"cover":"4278623f54a303fdf07b1748ae705f63"},{"id":"jari","name":"Jari","albums":[{"k":"0.1","n":1,"t":"Le troisieme goal","s":null,"o":true},{"k":"0.2","n":2,"t":"Le diable rouge","s":null,"o":true},{"k":"0.3","n":3,"t":"Au pays basque","s":null,"o":true}]},{"id":"julie-wood","name":"Julie Wood","albums":[{"k":"0.1","n":1,"t":"Une fille nommée Julie Wood","s":null,"o":true},{"k":"0.2","n":2,"t":"Défends-toi Julie","s":null,"o":true},{"k":"0.3","n":3,"t":"500 fous au départ","s":null,"o":false},{"k":"0.4","n":4,"t":"Pas de cadeau pour Julie","s":null,"o":false},{"k":"0.5","n":5,"t":"Le motard maudit","s":null,"o":false},{"k":"0.6","n":6,"t":"Un ours, un singe...et un side-car","s":null,"o":true},{"k":"0.7","n":7,"t":"Ouragan sur Daytona","s":null,"o":true},{"k":"0.8","n":8,"t":"Bol d'or","s":null,"o":true}],"cover":"331063af491d29a5f97701fd97758b04"},{"id":"kador","name":"Kador","albums":[{"k":"0.1","n":1,"t":"Tome 1","s":null,"o":true},{"k":"0.2","n":2,"t":"Tome 2","s":null,"o":true},{"k":"0.3","n":3,"t":"Tome 3","s":null,"o":true},{"k":"0.4","n":4,"t":"Tome 4","s":null,"o":true}],"cover":"1febd6be15a83e24d7f061ad46348524"},{"id":"l-agent-212","name":"L'Agent 212","albums":[{"k":"0.1","n":1,"t":"Poulet roti","s":null,"o":true}],"cover":"be28831db9890acc39724c5a3b275d2e"},{"id":"la-decouverte-du-monde","name":"La Découverte du monde","albums":[{"k":"0.1","n":1,"t":"D'ulysse à marco polo","s":null,"o":true},{"k":"0.2","n":2,"t":"De chirtophe colomb a cortes","s":null,"o":true},{"k":"0.3","n":3,"t":"De pizarre a magellan","s":null,"o":true},{"k":"0.4","n":4,"t":"De jacques carter a francis drake","s":null,"o":true},{"k":"0.5","n":5,"t":"De l'australie aux cosaques","s":null,"o":true},{"k":"0.6","n":6,"t":"Du coeur de l'afrique aux sources du nil","s":null,"o":true},{"k":"0.7","n":7,"t":"Du far west a lacroisiere jaune","s":null,"o":true},{"k":"0.8","n":8,"t":"Du pole nord a la conquete de l'espace","s":null,"o":true}]},{"id":"la-verite-sur","name":"La Vérité sur…","albums":[{"k":"0.1","n":1,"t":"Le tennis","s":null,"o":true}]},{"id":"lady-s","name":"Lady S","albums":[{"k":"0.1","n":1,"t":"Na zdorovié, Shaniouchka !","s":null,"o":true},{"k":"0.2","n":2,"t":"À ta santé, Suzie !","s":null,"o":true},{"k":"0.3","n":3,"t":"59° Latitude Nord","s":null,"o":true},{"k":"0.4","n":4,"t":"Jeu de dupes","s":null,"o":true},{"k":"0.5","n":5,"t":"Une taupe à Washington","s":null,"o":true},{"k":"0.6","n":6,"t":"Salade portugaise","s":null,"o":true},{"k":"0.7","n":7,"t":"Une seconde d'éternité","s":null,"o":true},{"k":"0.8","n":8,"t":"Raison d'état","s":null,"o":false},{"k":"0.9","n":9,"t":"Pour la peau d'une femme","s":null,"o":false},{"k":"0.10","n":10,"t":"A D N","s":null,"o":false},{"k":"0.11","n":11,"t":"La faille","s":null,"o":false},{"k":"0.12","n":12,"t":"Rapport de forces","s":null,"o":false},{"k":"0.13","n":13,"t":"Crimes de guerre","s":null,"o":false}],"cover":"73f3ee3e2668df248225c384c6434fcb"},{"id":"largo-winch","name":"Largo Winch","albums":[{"k":"0.1","n":1,"t":"L'héritier","s":null,"o":true},{"k":"0.2","n":2,"t":"Le groupe W","s":null,"o":true},{"k":"0.3","n":3,"t":"O.P.A.","s":null,"o":true},{"k":"0.4","n":4,"t":"Business Blues","s":null,"o":true},{"k":"0.5","n":5,"t":"H","s":null,"o":true},{"k":"0.6","n":6,"t":"Dutch connection","s":null,"o":true},{"k":"0.7","n":7,"t":"La forteresse de Makiling","s":null,"o":true},{"k":"0.8","n":8,"t":"L'heure du tigre","s":null,"o":true},{"k":"0.9","n":9,"t":"Voir Venise …","s":null,"o":true},{"k":"0.10","n":10,"t":". ... Et mourir","s":null,"o":true},{"k":"0.11","n":11,"t":"Golden Gate","s":null,"o":true},{"k":"0.12","n":12,"t":"Shadow","s":null,"o":true},{"k":"0.13","n":13,"t":"Le prix de l'argent","s":null,"o":true},{"k":"0.14","n":14,"t":"La loi du dollar","s":null,"o":true},{"k":"0.15","n":15,"t":"Les trois yeux des gardiens du Tao","s":null,"o":true},{"k":"0.16","n":16,"t":"La voie et la vertu","s":null,"o":true},{"k":"0.17","n":17,"t":"Mer noire","s":null,"o":true},{"k":"0.18","n":18,"t":"Colère rouge","s":null,"o":true},{"k":"0.19","n":19,"t":"Chassé-Croisé","s":null,"o":true},{"k":"0.20","n":20,"t":"20 secondes","s":null,"o":true},{"k":"0.21","n":21,"t":"L'étoile du matin","s":null,"o":true},{"k":"0.22","n":22,"t":"Les voiles ecarlates","s":null,"o":true},{"k":"0.23","n":23,"t":"La frontiere de la nuit","s":null,"o":true},{"k":"0.24","n":24,"t":"Le Centile d'or","s":null,"o":true},{"k":"0.25","n":25,"t":"Si les dieux t'abandonnent…","s":null,"o":false},{"k":"0.26","n":26,"t":"…Ferme les yeux","s":null,"o":false}],"cover":"2d7abae449a9be3013e0f6677f43cdac"},{"id":"le-guide-de","name":"Le Guide de…","albums":[{"k":"0.1","n":1,"t":"La cinquantaine","s":null,"o":true}],"cover":"b2106cf37e8ecd2ac001b6d712b605f5"},{"id":"lefranc","name":"Lefranc","albums":[{"k":"0.1","n":1,"t":"La grande menace","s":null,"o":true},{"k":"0.2","n":2,"t":"L'ouragan du feu","s":null,"o":true},{"k":"0.3","n":3,"t":"Le mystere borg","s":null,"o":true},{"k":"0.4","n":4,"t":"Le repaire du loup","s":null,"o":true},{"k":"0.5","n":5,"t":"Les portes de l'enfer","s":null,"o":true},{"k":"0.6","n":6,"t":"Operation thor","s":null,"o":true},{"k":"0.7","n":7,"t":"L'oasis","s":null,"o":true},{"k":"0.8","n":8,"t":"L'arme absolue","s":null,"o":true},{"k":"0.9","n":9,"t":"La crypte","s":null,"o":true},{"k":"0.10","n":10,"t":"L'apocalypse","s":null,"o":true},{"k":"0.11","n":11,"t":"La cible","s":null,"o":true},{"k":"0.12","n":12,"t":"La camarilla","s":null,"o":true},{"k":"0.13","n":13,"t":"Le vol du spirit","s":null,"o":true},{"k":"0.14","n":14,"t":"La colonne","s":null,"o":true},{"k":"0.15","n":15,"t":"El paradisio","s":null,"o":true},{"k":"0.16","n":16,"t":"L'ultimatum","s":null,"o":true},{"k":"0.17","n":17,"t":"Le maitre de l'atome","s":null,"o":true},{"k":"0.18","n":18,"t":"La mome bleue","s":null,"o":true},{"k":"0.19","n":19,"t":"Londres en peril","s":null,"o":true},{"k":"0.20","n":20,"t":"Noel noir","s":null,"o":true},{"k":"0.21","n":21,"t":"Le chatiment","s":null,"o":true},{"k":"0.22","n":22,"t":"Les enfants du bunker","s":null,"o":true},{"k":"0.23","n":23,"t":"L'eternel shogun","s":null,"o":true},{"k":"0.24","n":24,"t":"L'enfant staline","s":null,"o":true},{"k":"0.25","n":25,"t":"Cuba libre","s":null,"o":true},{"k":"0.26","n":26,"t":"Mission antarctique","s":null,"o":true},{"k":"0.27","n":27,"t":"L'homme oiseau","s":null,"o":true},{"k":"0.28","n":28,"t":"Le principe d'heisenberg","s":null,"o":true},{"k":"0.29","n":29,"t":"La strategie du chaos","s":null,"o":true}],"cover":"e390b26c4b796909bc986404535de88f"},{"id":"les-4-as","name":"Les 4 As","albums":[{"k":"0.1","n":1,"t":"Les 4 as et le serpent de mer","s":null,"o":true},{"k":"0.2","n":2,"t":"Les 4 as et l'aéroglisseur","s":null,"o":false},{"k":"0.3","n":3,"t":"Les 4 as et la vache sacrée","s":null,"o":true},{"k":"0.4","n":4,"t":"Les 4 as et le visiteur de minuit","s":null,"o":false},{"k":"0.5","n":5,"t":"Les 4 as et le couroucou","s":null,"o":false},{"k":"0.6","n":6,"t":"Les 4 as et la coupe d'or","s":null,"o":false},{"k":"0.7","n":7,"t":"Les 4 as et le dragon des neiges","s":null,"o":true},{"k":"0.8","n":8,"t":"Les 4 as et le rallye olympique","s":null,"o":true},{"k":"0.9","n":9,"t":"Les 4 as et l'île du robinson","s":null,"o":true},{"k":"0.10","n":10,"t":"Les 4 as et le tyran","s":null,"o":true},{"k":"0.11","n":11,"t":"Les 4 as et la ruée vers l'or","s":null,"o":true},{"k":"0.12","n":12,"t":"Les 4 as et le Picasso volé","s":null,"o":true},{"k":"0.13","n":13,"t":"Les 4 as et la bombe F","s":null,"o":false},{"k":"0.14","n":14,"t":"Les 4 as et la saucisse volante","s":null,"o":true},{"k":"0.15","n":15,"t":"Les 4 as et le gang des chapeaux blancs","s":null,"o":false},{"k":"0.16","n":16,"t":"Les 4 as et le vaisseau fantôme","s":null,"o":false},{"k":"0.17","n":17,"t":"Les 4 as et le diamant bleu","s":null,"o":false},{"k":"0.18","n":18,"t":"Les 4 as et la licorne","s":null,"o":false},{"k":"0.19","n":19,"t":"Les 4 as et l'iceberg","s":null,"o":false},{"k":"0.20","n":20,"t":"Les 4 as et le château maléfique","s":null,"o":false},{"k":"0.21","n":21,"t":"Les 4 as et le trésor des tsars","s":null,"o":false},{"k":"0.22","n":22,"t":"Les 4 as et le hold-up de la big bank","s":null,"o":false},{"k":"0.23","n":23,"t":"Les 4 as et le magicien","s":null,"o":false},{"k":"0.24","n":24,"t":"Les 4 as et le secret de la montagne","s":null,"o":false},{"k":"0.25","n":25,"t":"Les 4 as et la déesse des mers","s":null,"o":false},{"k":"0.26","n":26,"t":"Les 4 as et la navette spatiale","s":null,"o":true},{"k":"0.27","n":27,"t":"Les 4 as et le requin géant","s":null,"o":false},{"k":"0.28","n":28,"t":"Les 4 as et l'empire caché","s":null,"o":false},{"k":"0.29","n":29,"t":"Les 4 as et le mystère de la jungle","s":null,"o":false},{"k":"0.30","n":30,"t":"Les 4as et les extraterrestres","s":null,"o":false},{"k":"0.31","n":31,"t":"Les 4 as et le fantôme du Mont Saint-Michel","s":null,"o":false},{"k":"0.32","n":32,"t":"Les 4 as et le robot vandale","s":null,"o":false},{"k":"0.33","n":33,"t":"Les 4 as et l'Atlantide","s":null,"o":false},{"k":"0.34","n":34,"t":"Les 4 as et les sorcières","s":null,"o":false},{"k":"0.35","n":35,"t":"Les 4 as et les dinosaures","s":null,"o":false},{"k":"0.36","n":36,"t":"Les 4 as et la momie","s":null,"o":false},{"k":"0.37","n":37,"t":"Les 4 as et les fantômes","s":null,"o":false},{"k":"0.38","n":38,"t":"Les 4 as et le monstre des océans","s":null,"o":false},{"k":"0.39","n":39,"t":"Les 4 As et Halloween","s":null,"o":false},{"k":"0.40","n":40,"t":"Le loup de Tasmanie","s":null,"o":true},{"k":"0.41","n":41,"t":"Les 4 as et le grand suprême","s":null,"o":false},{"k":"0.42","n":42,"t":"Mission Mars","s":null,"o":false},{"k":"0.43","n":43,"t":"La balade des 4 as","s":null,"o":false}],"cover":"85795af80ff74d5b7a147b5853b01ffe"},{"id":"les-accros-de-msn","name":"Les Accros de MSN","albums":[{"k":"0.1","n":1,"t":"Tome 1","s":null,"o":true}]},{"id":"les-bidochons","name":"Les Bidochons","albums":[{"k":"0.1","n":1,"t":"Roman d'amour","s":null,"o":true},{"k":"0.2","n":2,"t":"Les Bidochon en vacances","s":null,"o":true},{"k":"0.3","n":3,"t":"Les Bidochon en habitation à loyer modéré","s":null,"o":true},{"k":"0.4","n":4,"t":"Maison, sucrée maison","s":null,"o":true},{"k":"0.5","n":5,"t":"Ragots intimes","s":null,"o":true},{"k":"0.6","n":6,"t":"Les Bidochon en voyage organisé","s":null,"o":true},{"k":"0.7","n":7,"t":"Les Bidochon, assujettis sociaux","s":null,"o":true},{"k":"0.8","n":8,"t":"Vent du soir","s":null,"o":true},{"k":"0.9","n":9,"t":"Les fous sont lâchés","s":null,"o":true},{"k":"0.10","n":10,"t":"Les Bidochon usagers de la route","s":null,"o":true},{"k":"0.11","n":11,"t":"Matin, midi et soir suivi de matin, midi et soir","s":null,"o":false},{"k":"0.12","n":12,"t":"Les Bidochon téléspectateurs","s":null,"o":false},{"k":"0.13","n":13,"t":"La vie de mariage","s":null,"o":false},{"k":"0.14","n":14,"t":"Des instants inoubliables","s":null,"o":false},{"k":"0.15","n":15,"t":"Bidochon mère (môman)","s":null,"o":false},{"k":"0.16","n":16,"t":"Toniques","s":null,"o":false},{"k":"0.17","n":17,"t":"Les Bidochon usent le forfait","s":null,"o":false},{"k":"0.18","n":18,"t":"Les Bidochon voient tout, savent tout","s":null,"o":false},{"k":"0.19","n":19,"t":"Les Bidochon internautes","s":null,"o":true},{"k":"0.20","n":20,"t":"N'arrêtent pas le progrès","s":null,"o":false},{"k":"0.21","n":21,"t":"Sauvent la planète","s":null,"o":false},{"k":"0.22","n":22,"t":"HS01. Les Bidochon se donnent en spectacle","s":null,"o":false},{"k":"0.23","n":23,"t":"HS02. Morceaux choisis","s":null,"o":false},{"k":"0.24","n":24,"t":"HS03. Pensées de chevet","s":null,"o":false},{"k":"0.25","n":25,"t":"HS04. Les Bidochon ont vingt-cinq ans","s":null,"o":false},{"k":"0.26","n":26,"t":"HS05. Casting Bidochon","s":null,"o":false},{"k":"0.27","n":27,"t":"HS06. Un jour au musée avec les Bidochon","s":null,"o":false},{"k":"0.28","n":28,"t":"HS07. Un 2e jour au musée avec les Bidochon","s":null,"o":false},{"k":"0.29","n":29,"t":"HS08. Un jour au concert avec les Bidochon","s":null,"o":false},{"k":"0.30","n":30,"t":"HS09. Un 3e jour au musée avec les Bidochon","s":null,"o":false},{"k":"0.31","n":31,"t":"HS10. Il était une fois les Bidochon - 40 ans de bonheur absolu","s":null,"o":false},{"k":"0.32","n":32,"t":"HS11. Un 4e jour au musée avec les Bidochon","s":null,"o":false},{"k":"0.33","n":33,"t":"HS12. Un 5e jour au musée avec les Bidochons","s":null,"o":false},{"k":"0.34","n":34,"t":"Int. Les Bidochon","s":null,"o":false},{"k":"0.35","n":35,"t":"Librio. Princesse Raymonde","s":null,"o":false},{"k":"0.36","n":36,"t":"MBD23. Les Bidochon - Le Monde de la BD - 23","s":null,"o":false}],"cover":"8a5142970dbd0522ed22a21bb9519acd"},{"id":"les-foots-furieux","name":"Les Foots Furieux","albums":[{"k":"0.1","n":1,"t":"Tome 1","s":null,"o":false},{"k":"0.2","n":2,"t":"Tome 2","s":null,"o":true},{"k":"0.3","n":3,"t":"Tome 3","s":null,"o":true},{"k":"0.4","n":4,"t":"Tome 4","s":null,"o":false},{"k":"0.5","n":5,"t":"Tome 5","s":null,"o":false},{"k":"0.6","n":6,"t":"Tome 6","s":null,"o":true},{"k":"0.7","n":7,"t":"Tome 7","s":null,"o":true},{"k":"0.8","n":8,"t":"Tome 8","s":null,"o":false},{"k":"0.9","n":9,"t":"Tome 9","s":null,"o":true}]},{"id":"les-reportages-de-lefranc","name":"Les Reportages de Lefranc","albums":[{"k":"0.1","n":1,"t":"L'aviation n°1","s":null,"o":true},{"k":"0.2","n":2,"t":"L'aviation n°2","s":null,"o":true},{"k":"0.3","n":3,"t":"L'aviation n°3","s":null,"o":true},{"k":"0.4","n":4,"t":"Le mur de l'atlantique","s":null,"o":true},{"k":"0.5","n":5,"t":"Le debarquement","s":null,"o":true},{"k":"0.6","n":6,"t":"La bataille des ardennes","s":null,"o":true},{"k":"0.7","n":7,"t":"La chute du reich","s":null,"o":true},{"k":"0.8","n":8,"t":"La guerre du pacifique","s":null,"o":true},{"k":"0.9","n":9,"t":"Les batailles de moselle","s":null,"o":true}]},{"id":"les-schtroumpfs","name":"Les Schtroumpfs","albums":[{"k":"0.1","n":1,"t":"Les schtroumpfs noirs","s":null,"o":true},{"k":"0.2","n":2,"t":"Le sctroumpfissime","s":null,"o":true},{"k":"0.3","n":3,"t":"Docteur sctroumpf","s":null,"o":true},{"k":"0.4","n":4,"t":"Schtroumpf les bains","s":null,"o":true}],"cover":"deb1da2cf23e9ab0aa7920c5096dc061"},{"id":"les-simpson","name":"Les Simpson","albums":[{"k":"0.1","n":1,"t":"Fais moi peur","s":null,"o":true},{"k":"0.2","n":2,"t":"Un sacre foin","s":null,"o":true},{"k":"0.3","n":3,"t":"Quelle bidonnade!","s":null,"o":true}],"cover":"d5e4d70ffccf501043b0559b02c74259"},{"id":"les-tuniques-bleues","name":"Les Tuniques Bleues","albums":[{"k":"0.1","n":1,"t":"La grande patrouille","s":null,"o":true}],"cover":"33ba7a13a739cd43c5147b871f94ebe7"},{"id":"lucky-luke","name":"Lucky Luke","albums":[{"k":"0.1","n":1,"t":"La Mine d'or de Dick Digger","s":null,"o":false},{"k":"0.2","n":2,"t":"Rodéo","s":null,"o":false},{"k":"0.3","n":3,"t":"Arizona","s":null,"o":false},{"k":"0.4","n":4,"t":"Sous le ciel de l'Ouest","s":null,"o":false},{"k":"0.5","n":5,"t":"Lucky Luke contre Pat Poker","s":null,"o":true},{"k":"0.6","n":6,"t":"Hors-la-loi","s":null,"o":false},{"k":"0.7","n":7,"t":"L'Elixir du docteur Doxey","s":null,"o":false},{"k":"0.8","n":8,"t":"Lucky Luke et Phil Defer","s":null,"o":false},{"k":"0.9","n":9,"t":"Des rails sur la prairie","s":null,"o":false},{"k":"0.10","n":10,"t":"Alerte aux Pieds-Bleus","s":null,"o":false},{"k":"0.11","n":11,"t":"Lucky Luke contre Joss Jamon","s":null,"o":false},{"k":"0.12","n":12,"t":"Les cousins Dalton","s":null,"o":false},{"k":"0.13","n":13,"t":"Le juge","s":null,"o":false},{"k":"0.14","n":14,"t":"Ruée sur l'Oklahoma","s":null,"o":false},{"k":"0.15","n":15,"t":"L'évasion des Dalton","s":null,"o":false},{"k":"0.16","n":16,"t":"En remontant le Mississipi","s":null,"o":false},{"k":"0.17","n":17,"t":"Sur la piste des Dalton","s":null,"o":false},{"k":"0.18","n":18,"t":"À l'ombre des derricks","s":null,"o":false},{"k":"0.19","n":19,"t":"Les rivaux de Painful Gulch","s":null,"o":true},{"k":"0.20","n":20,"t":"Billly the Kid","s":null,"o":true},{"k":"0.21","n":21,"t":"Les collines noires","s":null,"o":false},{"k":"0.22","n":22,"t":"Les Dalton dans le blizzard","s":null,"o":true},{"k":"0.23","n":23,"t":"Les Dalton courent toujours","s":null,"o":true},{"k":"0.24","n":24,"t":"La caravane","s":null,"o":true},{"k":"0.25","n":25,"t":"La ville fantôme","s":null,"o":false},{"k":"0.26","n":26,"t":"Les Dalton se rachètent","s":null,"o":true},{"k":"0.27","n":27,"t":"Le 20ème de cavalerie","s":null,"o":false},{"k":"0.28","n":28,"t":"L'escorte","s":null,"o":true},{"k":"0.29","n":29,"t":"Des barbelés sur la prairie","s":null,"o":true},{"k":"0.30","n":30,"t":"Calamity Jane","s":null,"o":true},{"k":"0.31","n":31,"t":"Tortillas pour les Dalton","s":null,"o":true},{"k":"0.32","n":32,"t":"La diligence","s":null,"o":false},{"k":"0.33","n":33,"t":"Le Pied-Tendre","s":null,"o":false},{"k":"0.34","n":34,"t":"Dalton city","s":null,"o":true},{"k":"0.35","n":35,"t":"Jesse James","s":null,"o":false},{"k":"0.36","n":36,"t":"Western Circus","s":null,"o":false},{"k":"0.37","n":37,"t":"Canyon Apache","s":null,"o":false},{"k":"0.38","n":38,"t":"Ma Dalton","s":null,"o":false},{"k":"0.39","n":39,"t":"Chasseur de primes","s":null,"o":false},{"k":"0.40","n":40,"t":"Le grand duc","s":null,"o":false},{"k":"0.41","n":41,"t":"L'Héritage de Rantanplan","s":null,"o":false},{"k":"0.42","n":42,"t":"7 histoires complètes - Série 1","s":null,"o":true},{"k":"0.43","n":43,"t":"Le cavalier blanc","s":null,"o":false},{"k":"0.44","n":44,"t":"La guérison des Dalton","s":null,"o":false},{"k":"0.45","n":45,"t":"L'empereur Smith","s":null,"o":false},{"k":"0.46","n":46,"t":"Le fil qui chante","s":null,"o":false},{"k":"0.47","n":47,"t":"Le magot des Dalton","s":null,"o":false},{"k":"0.48","n":48,"t":"Le bandit manchot","s":null,"o":false},{"k":"0.49","n":49,"t":"La corde du pendu et autres histoires","s":null,"o":true},{"k":"0.50","n":50,"t":"Sarah Bernhardt","s":null,"o":true},{"k":"0.51","n":51,"t":"Daisy Town","s":null,"o":false},{"k":"0.52","n":52,"t":"Fingers","s":null,"o":true},{"k":"0.53","n":53,"t":"Le Daily Star","s":null,"o":false},{"k":"0.54","n":54,"t":"La fiancée de Lucky Luke","s":null,"o":false},{"k":"0.55","n":55,"t":"La ballade des Dalton et autres histoires","s":null,"o":false},{"k":"0.56","n":56,"t":"Le ranch maudit","s":null,"o":false},{"k":"0.57","n":57,"t":"Nitroglycérine","s":null,"o":true},{"k":"0.58","n":58,"t":"L'alibi","s":null,"o":true},{"k":"0.59","n":59,"t":"Le Pony Express","s":null,"o":true},{"k":"0.60","n":60,"t":"L'amnésie des Dalton","s":null,"o":true},{"k":"0.61","n":61,"t":"Chasse aux fantômes","s":null,"o":true},{"k":"0.62","n":62,"t":"Les Dalton à la noce","s":null,"o":true},{"k":"0.63","n":63,"t":"Le pont sur le Mississipi","s":null,"o":true},{"k":"0.64","n":64,"t":"Belle Starr","s":null,"o":false},{"k":"0.65","n":65,"t":"Le Klondike","s":null,"o":false},{"k":"0.66","n":66,"t":"O.K. Corral","s":null,"o":false},{"k":"0.67","n":67,"t":"Marcel Dalton","s":null,"o":false},{"k":"0.68","n":68,"t":"Le prophète","s":null,"o":false},{"k":"0.69","n":69,"t":"L'artiste peintre","s":null,"o":true},{"k":"0.70","n":70,"t":"La légende de l'Ouest","s":null,"o":false},{"k":"0.71","n":71,"t":"Le film de lucky luke daisy town","s":null,"o":true},{"k":"0.72","n":72,"t":"HS01. Histoire d'un dessin animé","s":null,"o":false},{"k":"0.73","n":73,"t":"HS02. La ballade des Dalton","s":null,"o":false},{"k":"0.74","n":74,"t":"HS03. Lucky Luke à 50 ans","s":null,"o":false},{"k":"0.75","n":75,"t":"HS04. Le Cuisinier français","s":null,"o":false},{"k":"0.76","n":76,"t":"HS05. Tous à l'Ouest","s":null,"o":false},{"k":"0.77","n":77,"t":"HS06. Les personnages de Lucky Luke et la véritable histoire de la conquête de l'Ouest","s":null,"o":false},{"k":"0.78","n":78,"t":"HS07. Les secrets d'une œuvre","s":null,"o":false},{"k":"0.79","n":79,"t":"HS7TL. Recettes pour bien nourrir son cow-boy","s":null,"o":false},{"k":"0.80","n":80,"t":"PF. Lucky Luke - 3 sérigraphies","s":null,"o":false},{"k":"0.81","n":81,"t":"PF. Hors-la-loi","s":null,"o":false},{"k":"0.82","n":82,"t":"PF. Les cousins Dalton","s":null,"o":false},{"k":"0.83","n":83,"t":"La belle province","s":null,"o":true},{"k":"0.84","n":84,"t":"La corde au cou","s":null,"o":true},{"k":"0.85","n":85,"t":"Les tontons daltons","s":null,"o":true},{"k":"0.86","n":86,"t":"L'apprenti cowboy","s":null,"o":true},{"k":"0.87","n":87,"t":"Lasso périlleux","s":null,"o":false},{"k":"0.88","n":88,"t":"Statue squaw","s":null,"o":false},{"k":"0.89","n":89,"t":"La fiancée de Lucky Luke","s":null,"o":true}],"cover":"29c8be5a1964308be184d6d9a79fb943"},{"id":"mac-coy","name":"Mac Coy","albums":[{"k":"0.1","n":1,"t":"Camerone","s":null,"o":true}],"cover":"1a02124b93a11f32a0cf0b393557aef7"},{"id":"marsupilami","name":"Marsupilami","albums":[{"k":"0.1","n":1,"t":"La queue du marsupilami","s":null,"o":true},{"k":"0.2","n":2,"t":"C'est quoi ce cirque","s":null,"o":true}],"cover":"b8f1791d4c3a3cc0e771913fb6574709"},{"id":"michel-vaillant","name":"Michel Vaillant","albums":[{"k":"0.1","n":1,"t":"Le grand défi","s":null,"o":true},{"k":"0.2","n":2,"t":"Le pilote sans visage","s":null,"o":true},{"k":"0.3","n":3,"t":"Le circuit de la peur","s":null,"o":true},{"k":"0.4","n":4,"t":"Route de nuit","s":null,"o":true},{"k":"0.5","n":5,"t":"Le 13 est au départ","s":null,"o":true},{"k":"0.6","n":6,"t":"La trahison de Steve Warson","s":null,"o":true},{"k":"0.7","n":7,"t":"Les casse-cou","s":null,"o":true},{"k":"0.8","n":8,"t":"Le 8e pilote","s":null,"o":true},{"k":"0.9","n":9,"t":"Le retour de Steve Warson","s":null,"o":true},{"k":"0.10","n":10,"t":"L'honneur du Samouraï","s":null,"o":true},{"k":"0.11","n":11,"t":"Suspense à Indianapolis","s":null,"o":true},{"k":"0.12","n":12,"t":"Les Chevaliers de Königsfeld","s":null,"o":true},{"k":"0.13","n":13,"t":"Concerto pour pilotes","s":null,"o":true},{"k":"0.14","n":14,"t":"Mach 1 pour Steve Warson","s":null,"o":true},{"k":"0.15","n":15,"t":"Le cirque infernal","s":null,"o":true},{"k":"0.16","n":16,"t":"Km. 357","s":null,"o":true},{"k":"0.17","n":17,"t":"Le fantôme des 24 heures","s":null,"o":true},{"k":"0.18","n":18,"t":"De l'huile sur la piste !","s":null,"o":true},{"k":"0.19","n":19,"t":"5 filles dans la course!","s":null,"o":true},{"k":"0.20","n":20,"t":"Rodéo sur 2 roues","s":null,"o":true},{"k":"0.21","n":21,"t":"Massacre pour un moteur!","s":null,"o":true},{"k":"0.22","n":22,"t":"Rush","s":null,"o":true},{"k":"0.23","n":23,"t":"Série noire","s":null,"o":true},{"k":"0.24","n":24,"t":"Cauchemar","s":null,"o":true},{"k":"0.25","n":25,"t":"Des filles et des moteurs","s":null,"o":true},{"k":"0.26","n":26,"t":"Champion du monde","s":null,"o":true},{"k":"0.27","n":27,"t":"Dans l'enfer du safari","s":null,"o":true},{"k":"0.28","n":28,"t":"Le secret de Steve Warson","s":null,"o":true},{"k":"0.29","n":29,"t":"San Francisco Circus","s":null,"o":true},{"k":"0.30","n":30,"t":"Les jeunes Loups","s":null,"o":true},{"k":"0.31","n":31,"t":"La révolte des rois","s":null,"o":true},{"k":"0.32","n":32,"t":"Le prince blanc","s":null,"o":true},{"k":"0.33","n":33,"t":"La silhouette en colère","s":null,"o":true},{"k":"0.34","n":34,"t":"K.O. pour Steve Warson","s":null,"o":true},{"k":"0.35","n":35,"t":"Le galérien","s":null,"o":true},{"k":"0.36","n":36,"t":"Un pilote a disparu","s":null,"o":true},{"k":"0.37","n":37,"t":"L'inconnu des 1000 pistes","s":null,"o":true},{"k":"0.38","n":38,"t":"Steve Warson contre Michel Vaillant","s":null,"o":true},{"k":"0.39","n":39,"t":"Rallye sur un volcan","s":null,"o":true},{"k":"0.40","n":40,"t":"Rififi en F1","s":null,"o":true},{"k":"0.41","n":41,"t":"Paris-Dakar","s":null,"o":true},{"k":"0.42","n":42,"t":"300 à l'heure dans Paris","s":null,"o":true},{"k":"0.43","n":43,"t":"Rendez-vous à Macao","s":null,"o":true},{"k":"0.44","n":44,"t":"Steve et Julie","s":null,"o":true},{"k":"0.45","n":45,"t":"L'homme de Lisbonne","s":null,"o":true},{"k":"0.46","n":46,"t":"Racing show","s":null,"o":true},{"k":"0.47","n":47,"t":"Panique à Monaco","s":null,"o":true},{"k":"0.48","n":48,"t":"Irish coffee","s":null,"o":true},{"k":"0.49","n":49,"t":"Catégorie poids lourds","s":null,"o":true},{"k":"0.50","n":50,"t":"Le défi des remparts","s":null,"o":true},{"k":"0.51","n":51,"t":"Le caïd de Francorchamps","s":null,"o":true},{"k":"0.52","n":52,"t":"F3000","s":null,"o":true},{"k":"0.53","n":53,"t":"La nuit de Carnac","s":null,"o":true},{"k":"0.54","n":54,"t":"L'affaire Bugatti","s":null,"o":true},{"k":"0.55","n":55,"t":"Une histoire de fous","s":null,"o":true},{"k":"0.56","n":56,"t":"Le maître du monde","s":null,"o":true},{"k":"0.57","n":57,"t":"La piste de jade","s":null,"o":true},{"k":"0.58","n":58,"t":"Paddock","s":null,"o":true},{"k":"0.59","n":59,"t":"La prisonnière","s":null,"o":true},{"k":"0.60","n":60,"t":"Victoires oubliées","s":null,"o":true},{"k":"0.61","n":61,"t":"La fièvre de Bercy","s":null,"o":true},{"k":"0.62","n":62,"t":"Le $pon$or","s":null,"o":true},{"k":"0.63","n":63,"t":"Cairo!","s":null,"o":true},{"k":"0.64","n":64,"t":"Opération Mirage","s":null,"o":true},{"k":"0.65","n":65,"t":"L'épreuve","s":null,"o":true},{"k":"0.66","n":66,"t":"100.000.000 $ pour Steve Warson","s":null,"o":true},{"k":"0.67","n":67,"t":"Pour David","s":null,"o":true},{"k":"0.68","n":68,"t":"China Moon","s":null,"o":true},{"k":"0.69","n":69,"t":"Hors-piste en enfer","s":null,"o":true},{"k":"0.70","n":70,"t":"24 heures sous influence","s":null,"o":true},{"k":"1.1","n":1,"t":"Au nom du fils","s":"Saison 2","o":true},{"k":"1.2","n":2,"t":"Voltage","s":"Saison 2","o":true},{"k":"1.3","n":3,"t":"Liaison dangereuse","s":"Saison 2","o":true},{"k":"1.4","n":4,"t":"Collapsus","s":"Saison 2","o":true},{"k":"1.5","n":5,"t":"Renaissance","s":"Saison 2","o":true},{"k":"1.6","n":6,"t":"Rébellion","s":"Saison 2","o":true},{"k":"1.7","n":7,"t":"Macao","s":"Saison 2","o":true},{"k":"1.8","n":8,"t":"13 jours","s":"Saison 2","o":true},{"k":"1.9","n":9,"t":"Duels","s":"Saison 2","o":true},{"k":"1.10","n":10,"t":"Pikes Peak","s":"Saison 2","o":true},{"k":"1.11","n":11,"t":"Cannonball","s":"Saison 2","o":true},{"k":"1.12","n":12,"t":"La cible","s":"Saison 2","o":true},{"k":"2.1","n":1,"t":"Retour a konigsfeld","s":null,"o":true},{"k":"2.2","n":2,"t":"Les labourdet #1 ni toi ni lui","s":null,"o":true},{"k":"2.3","n":3,"t":"Ça c'est du sport","s":null,"o":true},{"k":"2.4","n":4,"t":"Les labourdet #2 la rivale","s":null,"o":true},{"k":"2.5","n":5,"t":"Dossier v2001","s":null,"o":true},{"k":"2.6","n":6,"t":"L'inconnu du tour de France","s":null,"o":true},{"k":"2.7","n":7,"t":"Les labourdet #3 la verite vient du desert","s":null,"o":true},{"k":"2.8","n":8,"t":"Les labourdet #4 la croisiere du serpent","s":null,"o":true},{"k":"2.9","n":9,"t":"L'oncle paul 1","s":null,"o":true},{"k":"2.10","n":10,"t":"Les labourdet #5 le faux pas","s":null,"o":true},{"k":"2.11","n":11,"t":"L'oncle paul 2","s":null,"o":true},{"k":"2.12","n":12,"t":"L'oncle paul 3","s":null,"o":true},{"k":"2.13","n":13,"t":"Les labourdet #6 jeux dangereux","s":null,"o":true},{"k":"2.14","n":14,"t":"Les labourdet #7 le voisin de pallier","s":null,"o":true},{"k":"2.15","n":15,"t":"Les labourdet #8 le voyage de pepe","s":null,"o":true},{"k":"2.16","n":16,"t":"Les labourdet #9 suspense à Noirmoutier","s":null,"o":false},{"k":"3.1","n":1,"t":"Origines","s":"Histoires courtes","o":true},{"k":"3.2","n":2,"t":"Seventies","s":"Histoires courtes","o":true},{"k":"3.3","n":3,"t":"American circus","s":"Histoires courtes","o":false},{"k":"4.1","n":1,"t":"Dans l'enfer d'INDIANAPOLIS","s":"Légendes","o":true},{"k":"4.2","n":2,"t":"L'Ames des pilotes","s":"Légendes","o":true},{"k":"5.1","n":1,"t":"100 ans d'innovations","s":"Les 24 Heures du Mans","o":true}],"cover":"f9a16968dbf0e17560c8feafb57721e4"},{"id":"natacha","name":"Natacha","albums":[{"k":"0.1","n":1,"t":"Natacha hotesse de l'air","s":null,"o":true},{"k":"0.2","n":2,"t":"Natacha et le maharadjah","s":null,"o":true},{"k":"0.3","n":3,"t":"La memoire de metal","s":null,"o":true},{"k":"0.4","n":4,"t":"Un trone pour Natacha","s":null,"o":true},{"k":"0.5","n":5,"t":"Double vol","s":null,"o":true},{"k":"0.6","n":6,"t":"Le treizieme apotre","s":null,"o":true},{"k":"0.7","n":7,"t":"L'hotesse et Monna Lisa","s":null,"o":true},{"k":"0.8","n":8,"t":"Instantanes pour Caltech","s":null,"o":true},{"k":"0.9","n":9,"t":"Les machines incertaines","s":null,"o":true},{"k":"0.10","n":10,"t":"L'ile d'outre monde","s":null,"o":true},{"k":"0.11","n":11,"t":"Le grand pari","s":null,"o":true},{"k":"0.12","n":12,"t":"Les culottes de fer","s":null,"o":true},{"k":"0.13","n":13,"t":"Les nomades du ciel","s":null,"o":true},{"k":"0.14","n":14,"t":"Cauchemirage","s":null,"o":true},{"k":"0.15","n":15,"t":"La ceinture de CHERCHEMIDI","s":null,"o":true},{"k":"0.16","n":16,"t":"L'ange blond","s":null,"o":true},{"k":"0.17","n":17,"t":"La veuve noire","s":null,"o":true},{"k":"0.18","n":18,"t":"Natacha et les dinosaures","s":null,"o":true},{"k":"0.19","n":19,"t":"La mer des rochers","s":null,"o":true},{"k":"0.20","n":20,"t":"Atoll 66","s":null,"o":true},{"k":"0.21","n":21,"t":"Le regard du passe","s":null,"o":true},{"k":"0.22","n":22,"t":"L'epervier bleu","s":null,"o":true},{"k":"0.23","n":23,"t":"Sur les traces de l'épervier bleu","s":null,"o":true}],"cover":"769384f4686f7821417f9b8145573911"},{"id":"papyrus","name":"Papyrus","albums":[{"k":"0.1","n":1,"t":"La momie engloutie","s":null,"o":true}],"cover":"5d6b33ace991204ea8c38ab445e3d6a8"},{"id":"ric-hochet","name":"Ric Hochet","albums":[{"k":"0.1","n":1,"t":"Rapt sur le France","s":null,"o":true}],"cover":"dbc5aa8aad238d41e375fe1219fcedc6"},{"id":"rocky-luke","name":"Rocky Luke","albums":[{"k":"0.1","n":1,"t":"Banlieue west","s":null,"o":true}],"cover":"82326c2b89ab9d9c871b7b81eeda6b2b"},{"id":"sammy","name":"Sammy","albums":[{"k":"0.1","n":1,"t":"Cigarettes et whisky","s":null,"o":true}],"cover":"1274f43dd68e5ad154a6a6cde19027d0"},{"id":"spirou-et-fantasio","name":"Spirou et Fantasio","albums":[{"k":"0.1","n":1,"t":"Panade à champignac","s":null,"o":true},{"k":"0.2","n":2,"t":"4 aventures de spirou","s":null,"o":true},{"k":"0.3","n":3,"t":"Tu comprendras quand tu s'ras grand","s":null,"o":true},{"k":"0.4","n":4,"t":"Le prisonnier du bouddha","s":null,"o":true},{"k":"0.5","n":5,"t":"Mes amis à poil","s":null,"o":true}],"cover":"49576b5bab710e05caa56d087b8787d9"},{"id":"tanguy-et-laverdure","name":"Tanguy et Laverdure","albums":[{"k":"0.1","n":1,"t":"L'école des Aigles","s":null,"o":false},{"k":"0.2","n":2,"t":"Pour l'honneur des cocardes","s":null,"o":false},{"k":"0.3","n":3,"t":"Danger dans le ciel","s":null,"o":false},{"k":"0.4","n":4,"t":"Escadrille des cigognes","s":null,"o":true},{"k":"0.5","n":5,"t":"Mirage sur l'Orient","s":null,"o":false},{"k":"0.6","n":6,"t":"Canon bleu ne répond plus","s":null,"o":false},{"k":"0.7","n":7,"t":"Cap Zéro","s":null,"o":false},{"k":"0.8","n":8,"t":"Pirates du ciel","s":null,"o":false},{"k":"0.9","n":9,"t":"Les anges noirs","s":null,"o":false},{"k":"0.10","n":10,"t":"Mission speciale","s":null,"o":false},{"k":"0.11","n":11,"t":"Destination Pacifique","s":null,"o":false},{"k":"0.12","n":12,"t":"Menace sur Mururoa","s":null,"o":false},{"k":"0.13","n":13,"t":"Lieutenant Double Bang","s":null,"o":false},{"k":"0.14","n":14,"t":"Baroud sur le désert","s":null,"o":false},{"k":"0.15","n":15,"t":"Les vampires attaquent la nuit","s":null,"o":false},{"k":"0.16","n":16,"t":"La terreur vient du ciel","s":null,"o":true},{"k":"0.17","n":17,"t":"Mission dernière chance","s":null,"o":false},{"k":"0.18","n":18,"t":"Un DC.8 a disparu","s":null,"o":false},{"k":"0.19","n":19,"t":"La mystérieuse escadre Delta","s":null,"o":false},{"k":"0.20","n":20,"t":"Opération Tonnerre","s":null,"o":false},{"k":"0.21","n":21,"t":"Premières missions","s":null,"o":true},{"k":"0.22","n":22,"t":"Station brouillard","s":null,"o":true},{"k":"0.23","n":23,"t":"Plan de vol pour l'enfer","s":null,"o":true},{"k":"0.24","n":24,"t":"L'espion venu du ciel","s":null,"o":true},{"k":"0.25","n":25,"t":"Survol interdit","s":null,"o":false},{"k":"0.26","n":26,"t":"Prisonniers des serbes","s":null,"o":true},{"k":"0.27","n":27,"t":"Opération opium","s":null,"o":true},{"k":"0.28","n":28,"t":"Le vol 501","s":null,"o":false},{"k":"0.29","n":29,"t":"Taïaut sur bandits !","s":null,"o":false},{"k":"0.30","n":30,"t":"Rencontre de trois type","s":null,"o":false},{"k":"0.31","n":31,"t":"Diamants de sable","s":null,"o":false},{"k":"0.32","n":32,"t":"L'avion qui tuait ses pilotes","s":null,"o":false}],"cover":"cc3371c8a30f906fd3e1a7edbb23e580"},{"id":"thorgal","name":"Thorgal","albums":[{"k":"0.1","n":1,"t":"La Magicienne trahie","s":null,"o":true},{"k":"0.2","n":2,"t":"L'Île des Mers gelées","s":null,"o":true},{"k":"0.3","n":3,"t":"Les trois vieillards du pays d'Aran","s":null,"o":true},{"k":"0.4","n":4,"t":"La galère noire","s":null,"o":true},{"k":"0.5","n":5,"t":"Au-delà des ombres","s":null,"o":true},{"k":"0.6","n":6,"t":"La chute de Brek Zarith","s":null,"o":true},{"k":"0.7","n":7,"t":"L'enfant des étoiles","s":null,"o":true},{"k":"0.8","n":8,"t":"Alinoë","s":null,"o":true},{"k":"0.9","n":9,"t":"Les archers","s":null,"o":true},{"k":"0.10","n":10,"t":"Le pays Qâ","s":null,"o":true},{"k":"0.11","n":11,"t":"Les yeux de Tanatloc","s":null,"o":true},{"k":"0.12","n":12,"t":"La cité du dieu perdu","s":null,"o":true},{"k":"0.13","n":13,"t":"Entre terre et lumière","s":null,"o":true},{"k":"0.14","n":14,"t":"Aaricia","s":null,"o":true},{"k":"0.15","n":15,"t":"Le maître des montagnes","s":null,"o":true},{"k":"0.16","n":16,"t":"Louve","s":null,"o":true},{"k":"0.17","n":17,"t":"La gardienne des clés","s":null,"o":true},{"k":"0.18","n":18,"t":"L'Épée-Soleil","s":null,"o":true},{"k":"0.19","n":19,"t":"La forteresse invisible","s":null,"o":false},{"k":"0.20","n":20,"t":"La marque des bannis","s":null,"o":false},{"k":"0.21","n":21,"t":"La couronne d'Ogotaï","s":null,"o":false},{"k":"0.22","n":22,"t":"Géants","s":null,"o":false},{"k":"0.23","n":23,"t":"La cage","s":null,"o":false},{"k":"0.24","n":24,"t":"Arachnéa","s":null,"o":false},{"k":"0.25","n":25,"t":"Le Mal bleu","s":null,"o":true},{"k":"0.26","n":26,"t":"Le Royaume sous le Sable","s":null,"o":false},{"k":"0.27","n":27,"t":"Le Barbare","s":null,"o":false},{"k":"0.28","n":28,"t":"Kriss de Valnor","s":null,"o":false},{"k":"0.29","n":29,"t":"Le Sacrifice","s":null,"o":false},{"k":"0.30","n":30,"t":"Moi, Jolan","s":null,"o":false},{"k":"0.31","n":31,"t":"Le Bouclier de Thor","s":null,"o":false},{"k":"0.32","n":32,"t":"La Bataille d'Asgard","s":null,"o":false},{"k":"0.33","n":33,"t":"Le Bateau-Sabre","s":null,"o":false},{"k":"0.34","n":34,"t":"Kah-Aniel","s":null,"o":false},{"k":"0.35","n":35,"t":"Le feu écarlate","s":null,"o":false}],"cover":"15438a83a7fbf355a7e0c04e8ef39912"},{"id":"tintin","name":"Tintin","albums":[{"k":"0.1","n":1,"t":"Tintin au pays des Soviets","s":null,"o":true},{"k":"0.2","n":2,"t":"Tintin au Congo","s":null,"o":true},{"k":"0.3","n":3,"t":"Tintin en Amérique","s":null,"o":true},{"k":"0.4","n":4,"t":"Les cigares du pharaon","s":null,"o":true},{"k":"0.5","n":5,"t":"Le lotus bleu","s":null,"o":true},{"k":"0.6","n":6,"t":"L'oreille cassée","s":null,"o":true},{"k":"0.7","n":7,"t":"L'île noire","s":null,"o":true},{"k":"0.8","n":8,"t":"Le sceptre d'Ottokar","s":null,"o":true},{"k":"0.9","n":9,"t":"Le Crabe aux pinces d'or","s":null,"o":true},{"k":"0.10","n":10,"t":"L'étoile mystérieuse","s":null,"o":true},{"k":"0.11","n":11,"t":"Le secret de la licorne","s":null,"o":true},{"k":"0.12","n":12,"t":"Le trésor de Rackham le Rouge","s":null,"o":true},{"k":"0.13","n":13,"t":"Les 7 boules de cristal","s":null,"o":true},{"k":"0.14","n":14,"t":"Le temple du soleil","s":null,"o":true},{"k":"0.15","n":15,"t":"Au pays de l'or noir","s":null,"o":true},{"k":"0.16","n":16,"t":"Objectif lune","s":null,"o":true},{"k":"0.17","n":17,"t":"On a marché sur la lune","s":null,"o":true},{"k":"0.18","n":18,"t":"L'affaire Tournesol","s":null,"o":true},{"k":"0.19","n":19,"t":"Coke en stock","s":null,"o":true},{"k":"0.20","n":20,"t":"Tintin au Tibet","s":null,"o":true},{"k":"0.21","n":21,"t":"Les bijoux de la Castafiore","s":null,"o":true},{"k":"0.22","n":22,"t":"Vol 714 pour Sydney","s":null,"o":true},{"k":"0.23","n":23,"t":"Tintin et les picaros","s":null,"o":true},{"k":"0.24","n":24,"t":"Tintin et l'alph-art","s":null,"o":false}],"cover":"abc2da93c79bc121b14910d423dec741"},{"id":"titeuf","name":"Titeuf","albums":[{"k":"0.1","n":1,"t":"Dieu, le sexe et les bretelles","s":null,"o":true},{"k":"0.2","n":2,"t":"L'Amour, c'est pô propre…","s":null,"o":true},{"k":"0.3","n":3,"t":"Ça épate les filles…","s":null,"o":true},{"k":"0.4","n":4,"t":"C'est pô juste…","s":null,"o":true},{"k":"0.5","n":5,"t":"Et le derrière des choses","s":null,"o":true},{"k":"0.6","n":6,"t":"Tchô, monde cruel","s":null,"o":true},{"k":"0.7","n":7,"t":"Le miracle de la vie","s":null,"o":true},{"k":"0.8","n":8,"t":"Lâchez-moi le slip !","s":null,"o":true},{"k":"0.9","n":9,"t":"La loi du préau","s":null,"o":true},{"k":"0.10","n":10,"t":"Nadia se marie","s":null,"o":true},{"k":"0.11","n":11,"t":"Mes meilleurs copains","s":null,"o":true},{"k":"0.12","n":12,"t":"Le sens de la vie","s":null,"o":true},{"k":"0.13","n":13,"t":"A la folie","s":null,"o":false},{"k":"0.14","n":14,"t":"Bienvenue en adolescence !","s":null,"o":true},{"k":"0.15","n":15,"t":"À fond le slip !","s":null,"o":true}],"cover":"af2c2a0b24d63207e24f2bc9674d7d7e"},{"id":"une-annee-de-bd","name":"Une année de BD","albums":[{"k":"0.1","n":1,"t":"1990","s":null,"o":true},{"k":"0.2","n":2,"t":"1991","s":null,"o":true}]},{"id":"une-vie-de-merde","name":"Une vie de merde","albums":[{"k":"0.1","n":1,"t":"Au boulot","s":null,"o":true},{"k":"0.2","n":2,"t":"Les premieres fois","s":null,"o":true}]},{"id":"valentin","name":"Valentin","albums":[{"k":"0.1","n":1,"t":"L'heritage diabolique","s":null,"o":true}],"cover":"f72d5c04ddb9a5ca3ed5f40e8bacf017"},{"id":"xiii","name":"XIII","albums":[{"k":"0.1","n":1,"t":"Le jour du soleil noir","s":null,"o":true},{"k":"0.2","n":2,"t":"Là où va l'indien…","s":null,"o":true},{"k":"0.3","n":3,"t":"Toutes les larmes de l'enfer","s":null,"o":true},{"k":"0.4","n":4,"t":"Spads","s":null,"o":true},{"k":"0.5","n":5,"t":"Rouge total","s":null,"o":true},{"k":"0.6","n":6,"t":"Le dossier Jason Fly","s":null,"o":true},{"k":"0.7","n":7,"t":"La nuit du 3 août","s":null,"o":false},{"k":"0.8","n":8,"t":"Treize contre un","s":null,"o":false},{"k":"0.9","n":9,"t":"Pour Maria","s":null,"o":false},{"k":"0.10","n":10,"t":"El cascador","s":null,"o":false},{"k":"0.11","n":11,"t":"Trois montres d'argent","s":null,"o":false},{"k":"0.12","n":12,"t":"Le jugement","s":null,"o":false},{"k":"0.13","n":13,"t":"The XIII mystery - L'enquête","s":null,"o":false},{"k":"0.14","n":14,"t":"Secret défense","s":null,"o":false},{"k":"0.15","n":15,"t":"Lachez les chiens !","s":null,"o":false},{"k":"0.16","n":16,"t":"Opération Montecristo","s":null,"o":false},{"k":"0.17","n":17,"t":"L'or de Maximilien","s":null,"o":false},{"k":"0.18","n":18,"t":"La version Irlandaise","s":null,"o":false},{"k":"0.19","n":19,"t":"Le dernier round","s":null,"o":false},{"k":"0.20","n":20,"t":"Le jour du Mayflower","s":null,"o":true},{"k":"0.21","n":21,"t":"L'appât","s":null,"o":true},{"k":"0.22","n":22,"t":"Retour à Greenfalls","s":null,"o":false},{"k":"0.23","n":23,"t":"Le Message du martyr","s":null,"o":false},{"k":"0.24","n":24,"t":"L'Héritage de Jason Mac Lane","s":null,"o":false},{"k":"0.25","n":25,"t":"The XIII history","s":null,"o":false},{"k":"0.26","n":26,"t":"2132 metres","s":null,"o":false}],"cover":"1dac171f8dcb454f04eca23cecb57807"},{"id":"xiii-mystery","name":"XIII Mystery","albums":[{"k":"0.1","n":1,"t":"La Mangouste","s":null,"o":true},{"k":"0.2","n":2,"t":"Irina","s":null,"o":true},{"k":"0.3","n":3,"t":"Little Jones","s":null,"o":true},{"k":"0.4","n":4,"t":"Colonel Amos","s":null,"o":false},{"k":"0.5","n":5,"t":"Steve Rowland","s":null,"o":false},{"k":"0.6","n":6,"t":"Billly Stockton","s":null,"o":false},{"k":"0.7","n":7,"t":"Betty Barnowsky","s":null,"o":false},{"k":"0.8","n":8,"t":"Martha Shoebridge","s":null,"o":false},{"k":"0.9","n":9,"t":"Felicity Brown","s":null,"o":false},{"k":"0.10","n":10,"t":"Calvin Wax","s":null,"o":false},{"k":"0.11","n":11,"t":"Jonathan Fly","s":null,"o":false},{"k":"0.12","n":12,"t":"Alan Smith","s":null,"o":false},{"k":"0.13","n":13,"t":"Judith Warner","s":null,"o":false}],"cover":"a5722a0cde7b9cdb7b6a28ff30ebdce0"},{"id":"yoko-tsuno","name":"Yoko Tsuno","albums":[{"k":"0.1","n":1,"t":"Le trio de l'étrange","s":null,"o":true},{"k":"0.2","n":2,"t":"L'orgue du diable","s":null,"o":true},{"k":"0.3","n":3,"t":"La forge de Vulcain","s":null,"o":true},{"k":"0.4","n":4,"t":"Aventures électroniques","s":null,"o":true},{"k":"0.5","n":5,"t":"Message pour l'éternité","s":null,"o":true},{"k":"0.6","n":6,"t":"Les 3 soleils de Vinéa","s":null,"o":true},{"k":"0.7","n":7,"t":"La frontière de la vie","s":null,"o":true},{"k":"0.8","n":8,"t":"Les titans","s":null,"o":true},{"k":"0.9","n":9,"t":"La fille du vent","s":null,"o":true},{"k":"0.10","n":10,"t":"La lumière d'Ixo","s":null,"o":true},{"k":"0.11","n":11,"t":"La spirale du temps","s":null,"o":true},{"k":"0.12","n":12,"t":"La proie et l'ombre","s":null,"o":false},{"k":"0.13","n":13,"t":"Les archanges de Vinéa","s":null,"o":true},{"k":"0.14","n":14,"t":"Le feu de Wotan","s":null,"o":false},{"k":"0.15","n":15,"t":"Le canon de Kra","s":null,"o":false},{"k":"0.16","n":16,"t":"Le dragon de Hong Kong","s":null,"o":true},{"k":"0.17","n":17,"t":"Le matin du monde","s":null,"o":false},{"k":"0.18","n":18,"t":"Les exilés de Kifa","s":null,"o":false},{"k":"0.19","n":19,"t":"L'or du Rhin","s":null,"o":true},{"k":"0.20","n":20,"t":"L'astrologue de Bruges","s":null,"o":false},{"k":"0.21","n":21,"t":"La porte des âmes","s":null,"o":false},{"k":"0.22","n":22,"t":"La jonque céleste","s":null,"o":false},{"k":"0.23","n":23,"t":"La pagode des brumes","s":null,"o":true},{"k":"0.24","n":24,"t":"Le septième code","s":null,"o":false},{"k":"0.25","n":25,"t":"La servante de Lucifer","s":null,"o":false},{"k":"0.26","n":26,"t":"Le Maléfice de l'améthyste","s":null,"o":false},{"k":"0.27","n":27,"t":"Le Secret de Khâny","s":null,"o":false},{"k":"0.28","n":28,"t":"Le temple des immortels","s":null,"o":false},{"k":"0.29","n":29,"t":"De la Terre à Vinéa","s":null,"o":false},{"k":"0.30","n":30,"t":"L'orgue du diable / La frontière de la vie","s":null,"o":false},{"k":"0.31","n":31,"t":"HS1. L'écume de l'aube","s":null,"o":false},{"k":"0.32","n":32,"t":"HS2TL. Missives spatiales","s":null,"o":false}],"cover":"d1483f6173522072d648b6369ed748f0"}];
+
+/* ================= état =================
+   owned  : id de série -> Set des clés d'albums possédés (clé « bloc.numéro »,
+            car les sous-collections repartent à l'album n°1).
+   extra  : id de série -> albums ajoutés un par un {n, t, o}
+   added  : séries entières ajoutées depuis l'application (collection « custom »)
+   stamp  : date de la dernière modification locale, pour qu'une version plus
+            ancienne du serveur n'écrase pas ce qui a été coché hors connexion. */
+const owned = new Map(), extra = new Map(), added = new Map(), stamp = new Map();
+const CAT = new Map(CATALOGUE.map(s => [s.id, s]));
+
+for (const s of CATALOGUE) {
+  owned.set(s.id, new Set(s.albums.filter(a => a.o).map(a => a.k)));
+  extra.set(s.id, []);
+}
+
+let db = null, canWrite = null, sampler;
+let view = { name: 'shelf', id: null };
+let filter = 'all', query = '', adding = null;
+const LS = 'bd.v2';
+
+const norm = s => (s || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const byName = (a, b) => norm(a.name).localeCompare(norm(b.name), 'fr');
+
+const serie = id => CAT.get(id) || added.get(id);
+const allSeries = () => [...CATALOGUE, ...added.values()].sort(byName);
+const ensure = id => {
+  if (!owned.has(id)) owned.set(id, new Set());
+  if (!extra.has(id)) extra.set(id, []);
+};
+const total = s => s.albums.length + (extra.get(s.id) || []).length;
+const count = s => (owned.get(s.id) || new Set()).size
+  + (extra.get(s.id) || []).filter(a => a.o).length;
+const missingOf = s => [
+  ...s.albums.filter(a => !owned.get(s.id).has(a.k)).map(a => ({ ...a, sid: s.id })),
+  ...(extra.get(s.id) || []).map((a, i) => ({ ...a, sid: s.id, xi: i })).filter(a => !a.o),
+];
+const slug = n => norm(n).replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60) || 'serie';
+
+/* ================= persistance ================= */
+function snapshot() {
+  const o = {};
+  for (const s of allSeries()) o[s.id] = {
+    owned: [...(owned.get(s.id) || [])], extra: extra.get(s.id) || [], at: stamp.get(s.id) || 0,
+  };
+  return { state: o, added: [...added.values()] };
+}
+const saveLocal = () => { try { localStorage.setItem(LS, JSON.stringify(snapshot())); } catch (e) {} };
+const readLocal = () => { try { return JSON.parse(localStorage.getItem(LS) || 'null'); } catch (e) { return null; } };
+
+function applyState(id, d, fromDb) {
+  if (!serie(id) || !d) return false;
+  const at = Number(d.at) || 0;
+  if (fromDb && at < (stamp.get(id) || 0)) return false;
+  ensure(id);
+  if (Array.isArray(d.owned)) owned.set(id, new Set(d.owned.filter(k => typeof k === 'string')));
+  if (Array.isArray(d.extra)) extra.set(id, d.extra
+    .filter(a => a && typeof a.t === 'string')
+    .map(a => ({ n: Number(a.n) || 0, t: a.t, o: a.o !== false })));
+  stamp.set(id, at);
+  return true;
+}
+function applyAdded(d) {
+  if (!d || typeof d.name !== 'string' || !Array.isArray(d.albums)) return false;
+  const id = String(d.id || slug(d.name));
+  if (CAT.has(id)) return false;
+  added.set(id, { id, name: d.name, custom: true,
+    albums: d.albums.filter(a => a && typeof a.t === 'string')
+      .map((a, i) => ({ k: String(a.k || `0.${a.n || i + 1}`), n: Number(a.n) || i + 1, t: a.t, s: null })) });
+  ensure(id);
+  return true;
+}
+
+const pending = new Map();
+function queueWrite(id) {
+  stamp.set(id, Date.now());
+  saveLocal();
+  if (!db || canWrite === false) return;
+  clearTimeout(pending.get(id));
+  setSync('saving');
+  pending.set(id, setTimeout(async () => {
+    pending.delete(id);
+    try {
+      await db.doc('series/' + id).set({
+        owned: [...owned.get(id)].sort(), extra: extra.get(id), at: stamp.get(id) || Date.now(),
+      });
+      if (!pending.size) setSync('ok');
+    } catch (e) {
+      if (e && e.code === 'invalid_argument') { canWrite = false; setSync('local'); }
+      else setSync('retry');
+    }
+  }, 450));
+}
+
+function setSync(state) {
+  const el = document.getElementById('sync'), t = document.getElementById('sync-t');
+  const msg = { ok: 'Tout est enregistré', saving: 'Enregistrement…',
+    local: 'Enregistré sur cet appareil seulement', retry: 'Enregistrement impossible pour l’instant' };
+  el.dataset.s = (state === 'ok' || state === 'saving') ? state : 'local';
+  t.textContent = msg[state] || '';
+}
+
+/* ================= visuels ================= */
+const TINTS = ['#1F4E79', '#8A4B2A', '#2C6A4E', '#6B3A6E', '#9C6B13', '#2B5E6B', '#7A2E3C', '#3F5330'];
+const tint = id => TINTS[[...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % TINTS.length];
+const initial = n => (norm(n).replace(/^(le|la|les|l|un|une|des) /, '')[0] || '?').toUpperCase();
+
+function art(s, cls) {
+  if (s.cover) return `<img src="/_blob/${esc(s.cover)}" alt="" loading="lazy" decoding="async">`;
+  return `<span class="ph" style="background:${tint(s.id)}">
+      <i aria-hidden="true">${esc(initial(s.name))}</i><span>${esc(s.name)}</span></span>`;
+}
+
+const CHECK = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="m4.5 12.5 5 5L20 7"/></svg>`;
+
+/* ================= rendu ================= */
+function albumRow(a, sid, o = {}) {
+  const sub = o.series ? `<span class="srs">${esc(serie(sid).name)}</span>` : '';
+  const right = o.verdict
+    ? `<span class="verdict">${o.on ? 'Vous l’avez' : 'Pas encore'}</span>`
+    : `<span class="tick" aria-hidden="true">${CHECK}</span>`;
+  return `<li><button class="al" role="switch" aria-pressed="${o.on}"
+      data-s="${esc(sid)}" data-k="${esc(a.k || '')}"${a.xi != null ? ` data-x="${a.xi}"` : ''}>
+      <span class="num tnum">${a.n || '•'}</span>
+      <span class="ttl">${esc(a.t)}${sub}</span>${right}</button></li>`;
+}
+
+function tile(s) {
+  const c = count(s), t = total(s), done = c >= t && t > 0;
+  return `<li><button class="tile" data-go="${esc(s.id)}">
+    <span class="art">${art(s)}
+      <span class="veil" aria-hidden="true"></span>
+      ${done ? `<span class="flag" aria-hidden="true">${CHECK}</span>` : ''}
+      <span class="on-art">
+        <span class="bar" aria-hidden="true"><i style="width:${t ? (c / t * 100).toFixed(1) : 0}%"></i></span>
+        <span class="cnt">${done ? 'Complète' : `${c} / ${t}`}</span>
+      </span></span>
+    <span class="name">${esc(s.name)}</span></button></li>`;
+}
+
+function renderShelf() {
+  const all = allSeries();
+  const list = all.filter(s => filter === 'all'
+    || (filter === 'todo' ? count(s) < total(s) : count(s) >= total(s)));
+  const todo = all.filter(s => count(s) < total(s)).length;
+  document.getElementById('v-shelf').innerHTML = `
+    <div class="chips" role="group" aria-label="Filtrer">
+      ${[['all', 'Toutes', all.length], ['todo', 'À compléter', todo], ['done', 'Complètes', all.length - todo]]
+      .map(([k, l, n]) => `<button class="chip" data-f="${k}" aria-pressed="${filter === k}">${l}<span class="n tnum">${n}</span></button>`).join('')}
+    </div>
+    <ul class="shelf">
+      <li><button class="tile add" data-add-serie>
+        <span class="art"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        <span>Ajouter une série</span></span></button></li>
+      ${list.map(tile).join('')}
+    </ul>`;
+}
+
+function renderDetail() {
+  const s = serie(view.id);
+  if (!s) { view = { name: 'shelf', id: null }; return renderShelf(); }
+  const set = owned.get(s.id), c = count(s), t = total(s);
+  const blocks = [];
+  for (const a of s.albums) {
+    const bi = String(a.k).split('.')[0];
+    if (!blocks.length || blocks[blocks.length - 1].bi !== bi)
+      blocks.push({ bi, label: a.s || null, rows: [] });
+    blocks[blocks.length - 1].rows.push(albumRow(a, s.id, { on: set.has(a.k) }));
+  }
+  const ex = extra.get(s.id) || [];
+  if (ex.length) blocks.push({ bi: 'x', label: 'Mes ajouts',
+    rows: ex.map((a, i) => albumRow({ ...a, xi: i }, s.id, { on: a.o })) });
+
+  document.getElementById('v-detail').innerHTML = `
+    <button class="back" data-back>
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"/></svg>
+      Ma collection</button>
+    <div class="hero">
+      <span class="art">${art(s)}</span>
+      <span class="meta">
+        <h2>${esc(s.name)}</h2>
+        <p class="sub"><b id="d-c">${c}</b> sur ${t}${c >= t ? ' — complète' : `, il en manque ${t - c}`}</p>
+        <span class="pbar${c >= t ? ' full' : ''}" id="d-bar"><i style="width:${t ? (c / t * 100).toFixed(1) : 0}%"></i></span>
+      </span>
+    </div>
+    ${blocks.map(b => (b.label ? `<p class="section-label">${esc(b.label)}</p>` : '<div style="height:14px"></div>')
+      + `<ul class="albums">${b.rows.join('')}</ul>`).join('')}
+    <div class="btns" style="margin-top:18px">
+      <button class="btn wide" data-add-album>
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Ajouter un album</button>
+      ${s.custom ? '<button class="btn danger" data-del-serie>Supprimer la série</button>' : ''}
+    </div>
+    <div class="panel" id="add-album" hidden style="margin-top:14px">
+      <p class="eyebrow">Nouvel album — ${esc(s.name)}</p>
+      <div class="field">
+        <input type="text" class="num" id="aa-n" inputmode="numeric" placeholder="N°" aria-label="Numéro">
+        <input type="text" id="aa-t" placeholder="Titre de l’album" aria-label="Titre de l’album">
+      </div>
+      <div class="btns"><button class="btn" data-cancel>Annuler</button>
+        <button class="btn pri" data-save-album disabled>Ajouter</button></div>
+    </div>`;
+}
+
+function renderMissing() {
+  const groups = allSeries().map(s => ({ s, m: missingOf(s) })).filter(g => g.m.length)
+    .sort((a, b) => a.m.length - b.m.length || byName(a.s, b.s));
+  const n = groups.reduce((k, g) => k + g.m.length, 0);
+  document.getElementById('v-missing').innerHTML = !n
+    ? `<p class="empty"><strong>Rien ne manque</strong>Toutes les séries de la liste sont complètes.</p>`
+    : `<p class="eyebrow">Votre liste de courses</p>
+       <p class="hint"><b class="tnum">${n}</b> albums ne sont pas encore chez vous. Les séries qui
+          demandent le moins d’achats sont en premier. Touchez un album dès que vous l’avez.</p>
+       ${groups.map(g => `<div data-grp="${esc(g.s.id)}">
+         <div class="group-head"><span class="thumb">${art(g.s)}</span>
+           <span class="gt">${esc(g.s.name)}</span>
+           <span class="gn"><b data-gn>${g.m.length}</b> à trouver</span></div>
+         <ul class="albums fade">${g.m.map(a => albumRow(a, g.s.id, { on: false })).join('')}</ul>
+       </div>`).join('')}`;
+}
+
+function renderStats() {
+  const all = allSeries();
+  const t = all.reduce((k, s) => k + total(s), 0), c = all.reduce((k, s) => k + count(s), 0);
+  const done = all.filter(s => count(s) >= total(s)).length;
+  const near = all.map(s => ({ s, m: total(s) - count(s) })).filter(g => g.m > 0 && g.m <= 3)
+    .sort((a, b) => a.m - b.m || byName(a.s, b.s));
+  document.getElementById('v-stats').innerHTML = `
+    <span class="pbar" style="height:14px"><i style="width:${t ? (c / t * 100).toFixed(1) : 0}%"></i></span>
+    <p class="hint" style="margin-top:9px">${t ? (c / t * 100).toFixed(0) : 0} % de la liste est chez vous.</p>
+    <div class="stats">
+      <div class="stat have"><div class="k tnum">${c}</div><div class="l">albums possédés</div></div>
+      <div class="stat gold"><div class="k tnum">${t - c}</div><div class="l">albums à trouver</div></div>
+      <div class="stat"><div class="k tnum">${all.length}</div><div class="l">séries suivies</div></div>
+      <div class="stat have"><div class="k tnum">${done}</div><div class="l">séries complètes</div></div>
+    </div>
+    ${near.length ? `<p class="eyebrow">Bientôt complètes</p>
+      <p class="hint">Trois albums ou moins vous séparent de la série entière.</p>
+      <ul class="shelf">${near.map(g => tile(g.s)).join('')}</ul>` : ''}`;
+}
+
+function renderSearch() {
+  const q = norm(query.trim());
+  if (!q) return;
+  const hits = [];
+  for (const s of allSeries()) {
+    const inName = norm(s.name).includes(q), set = owned.get(s.id) || new Set();
+    for (const a of s.albums)
+      if (inName || norm(a.t).includes(q)) hits.push({ a, sid: s.id, on: set.has(a.k) });
+    (extra.get(s.id) || []).forEach((a, i) => {
+      if (inName || norm(a.t).includes(q)) hits.push({ a: { ...a, xi: i }, sid: s.id, on: a.o });
+    });
+    if (hits.length > 160) break;
+  }
+  const have = hits.filter(h => h.on).length;
+  document.getElementById('v-search').innerHTML = hits.length
+    ? `<p class="eyebrow">${hits.length} résultat${hits.length > 1 ? 's' : ''} — ${have} chez vous</p>
+       <p class="hint">Touchez une ligne pour changer la réponse.</p>
+       <ul class="albums">${hits.slice(0, 120).map(h =>
+      albumRow(h.a, h.sid, { on: h.on, series: true, verdict: true })).join('')}</ul>`
+    : `<p class="empty"><strong>Aucun album de ce nom</strong>
+         Ce titre n’est pas dans la liste. Vérifiez l’orthographe, ou ajoutez la série
+         depuis « Ma collection ».</p>`;
+}
+
+function updateTallies() {
+  const all = allSeries();
+  const t = all.reduce((k, s) => k + total(s), 0), c = all.reduce((k, s) => k + count(s), 0);
+  document.getElementById('t-own').textContent = c;
+  document.getElementById('t-tot').textContent = t;
+  document.getElementById('tab-missing').textContent = t - c ? `(${t - c})` : '';
+}
+
+function render() {
+  const searching = query.trim().length > 0;
+  const name = searching ? 'search' : view.name;
+  for (const v of ['search', 'shelf', 'detail', 'missing', 'stats'])
+    document.getElementById('v-' + v).hidden = v !== name;
+  ({ search: renderSearch, shelf: renderShelf, detail: renderDetail,
+    missing: renderMissing, stats: renderStats })[name]();
+  if (adding && !searching && view.name === 'shelf') renderAddPanel();
+  updateTallies();
+  document.getElementById('q-clear').hidden = !searching;
+  for (const b of document.querySelectorAll('.tab'))
+    b.setAttribute('aria-current',
+      !searching && b.dataset.tab === (view.name === 'detail' ? 'shelf' : view.name) ? 'page' : 'false');
+}
+
+function toTop() {
+  try { window.scrollTo(0, 0); } catch (e) {}
+  const se = document.scrollingElement || document.documentElement;
+  if (se) se.scrollTop = 0;
+}
+const go = (name, id) => { view = { name, id: id || null }; toTop(); render(); };
+
+/* ================= cocher / décocher ================= */
+function toggle(btn, sid, k, xi) {
+  ensure(sid);
+  let on;
+  if (xi != null && xi !== '') {
+    const a = extra.get(sid)[Number(xi)];
+    if (!a) return;
+    on = a.o = !a.o;
+  } else {
+    const set = owned.get(sid);
+    on = !set.has(k);
+    on ? set.add(k) : set.delete(k);
+  }
+  queueWrite(sid);
+
+  // mise à jour sur place : la liste ne se reconstruit pas sous le doigt
+  btn.setAttribute('aria-pressed', String(on));
+  const v = btn.querySelector('.verdict');
+  if (v) v.textContent = on ? 'Vous l’avez' : 'Pas encore';
+  updateTallies();
+
+  if (view.name === 'detail' && !query.trim()) {
+    const s = serie(sid), c = count(s), t = total(s);
+    const cEl = document.getElementById('d-c'), bar = document.getElementById('d-bar');
+    if (cEl) cEl.parentNode.innerHTML =
+      `<b id="d-c">${c}</b> sur ${t}${c >= t ? ' — complète' : `, il en manque ${t - c}`}`;
+    if (bar) { bar.classList.toggle('full', c >= t); bar.firstElementChild.style.width = (t ? c / t * 100 : 0) + '%'; }
+  }
+  if (view.name === 'missing' && !query.trim() && on) {
+    const li = btn.parentNode, grp = li.closest('[data-grp]');
+    li.style.opacity = '0'; li.style.transform = 'translateX(14px)';
+    setTimeout(() => {
+      li.remove();
+      if (grp && !grp.querySelector('.al')) grp.remove();
+      else if (grp) grp.querySelector('[data-gn]').textContent = grp.querySelectorAll('.al').length;
+      if (!document.querySelector('#v-missing .al')) renderMissing();
+    }, 200);
+  }
+  if (view.name === 'stats' && !query.trim()) renderStats();
+}
+
+/* ================= ajouter une série ================= */
+function renderAddPanel() {
+  const host = document.getElementById('v-shelf');
+  let p = document.getElementById('add-serie');
+  if (!p) { p = document.createElement('div'); p.id = 'add-serie'; host.prepend(p); }
+  const a = adding;
+  if (a.step === 'ask') {
+    p.innerHTML = `<div class="panel">
+      <h3>Ajouter une série</h3>
+      <p class="note">Tapez le nom de la série, puis choisissez : soit l’application vous
+         propose la liste de ses albums, soit vous la saisissez vous-même.</p>
+      <div class="field"><input type="text" id="as-q" placeholder="Ex. : Les Vieux Fourneaux"
+        aria-label="Nom de la série" value="${esc(a.q || '')}"></div>
+      ${a.err ? `<p class="note warn">${esc(a.err)}</p>` : ''}
+      <div class="btns">
+        <button class="btn pri wide" data-add-find>Proposer les albums</button>
+        <button class="btn wide" data-add-manual>Saisir à la main</button>
+      </div>
+      <div class="btns"><button class="btn" data-add-cancel>Annuler</button></div>
+    </div>`;
+  } else if (a.step === 'load') {
+    p.innerHTML = `<div class="panel"><h3>Recherche…</h3>
+      <p class="note" style="display:flex;align-items:center;gap:10px">
+        <span class="spin"></span> Je cherche les albums de « ${esc(a.q)} ».</p></div>`;
+  } else {
+    const next = a.albums.length ? Math.max(...a.albums.map(x => x.n || 0)) + 1 : 1;
+    p.innerHTML = `<div class="panel">
+      <h3>Nouvelle série</h3>
+      <div class="field"><input type="text" id="as-name" value="${esc(a.name || '')}"
+        placeholder="Nom de la série" aria-label="Nom de la série"></div>
+      ${a.fromAI ? `<p class="note warn">Liste proposée automatiquement : vérifiez-la, elle peut
+         comporter des erreurs ou des oublis. Corrigez-la librement ci-dessous.</p>` : ''}
+      ${a.albums.length ? `<ul class="prop">${a.albums.map((al, i) => `<li>
+          <span class="pn tnum">${al.n}</span><span class="pt">${esc(al.t)}</span>
+          <button class="rm" data-rm="${i}" aria-label="Retirer ${esc(al.t)}">×</button></li>`).join('')}</ul>
+        <p class="note">${a.albums.length} album${a.albums.length > 1 ? 's' : ''}. Ils seront ajoutés
+           comme « pas encore chez vous » : vous les cocherez ensuite.</p>`
+      : '<p class="note">Aucun album pour l’instant. Ajoutez-les ci-dessous.</p>'}
+
+      <p class="eyebrow" style="margin:4px 0 0">Ajouter un album</p>
+      <div class="field">
+        <input type="text" class="num" id="ae-n" inputmode="numeric" value="${next}" aria-label="Numéro">
+        <input type="text" id="ae-t" placeholder="Titre de l’album" aria-label="Titre de l’album">
+        <button class="btn ae-add" data-ae-add aria-label="Ajouter cet album">+</button>
+      </div>
+
+      <details${a.paste ? ' open' : ''}>
+        <summary>Coller plusieurs titres d’un coup</summary>
+        <p class="note" style="margin:8px 0">Un titre par ligne, dans l’ordre des tomes.
+           Un numéro en début de ligne est repris tel quel.</p>
+        <textarea id="ae-paste" placeholder="Ceux qui restent&#10;Bonny and Pierrot&#10;Celui qui part"
+          aria-label="Liste de titres à coller"></textarea>
+        <div class="btns" style="margin-top:9px">
+          <button class="btn" data-ae-paste>Ajouter ces titres</button></div>
+      </details>
+      ${a.err ? `<p class="note warn">${esc(a.err)}</p>` : ''}
+      <div class="btns"><button class="btn" data-add-cancel>Annuler</button>
+        <button class="btn pri" data-add-save${a.albums.length ? '' : ' disabled'}>Créer la série</button></div>
+    </div>`;
+  }
+}
+
+/* Garde ce que l'utilisatrice a tapé avant que le panneau ne se reconstruise. */
+function syncAddName() {
+  const el = document.getElementById('as-name');
+  if (el && adding) adding.name = el.value;
+}
+
+async function findSerie(name) {
+  adding = { step: 'load', q: name };
+  render();
+  try {
+    sampler = sampler || await window.claude?.use?.('sample');
+    if (!sampler) throw { code: 'not_granted' };
+    const out = await sampler.json(
+      `Tu connais la bande dessinée franco-belge, les comics et les mangas.\n` +
+      `Donne la liste des albums de la série « ${name} », dans l'ordre de parution.\n` +
+      `Réponds UNIQUEMENT par un objet JSON de la forme :\n` +
+      `{"serie":"nom exact de la série","albums":[{"n":1,"t":"titre du tome 1"}]}\n` +
+      `N'invente aucun titre. Si tu ne connais pas cette série, réponds {"serie":"","albums":[]}.`);
+    const albums = (out && Array.isArray(out.albums) ? out.albums : [])
+      .filter(a => a && typeof a.t === 'string' && a.t.trim())
+      .map((a, i) => ({ n: Number(a.n) || i + 1, t: String(a.t).trim() })).slice(0, 300);
+    if (!albums.length) {
+      adding = { step: 'edit', q: name, name, albums: [],
+        err: `Aucun album trouvé pour « ${name} ». Saisissez-les vous-même ci-dessous.` };
+    } else {
+      adding = { step: 'edit', q: name, name: (out.serie || name).trim(), albums, fromAI: true };
+    }
+  } catch (e) {
+    const m = { not_granted: 'La proposition automatique n’est pas disponible ici. Saisissez les albums vous-même ci-dessous.',
+      rate_limited: 'Trop de recherches d’affilée. Réessayez dans un moment, ou saisissez les albums vous-même.' };
+    adding = { step: 'edit', q: name, name, albums: [],
+      err: m[e && e.code] || 'La recherche n’a pas abouti. Saisissez les albums vous-même ci-dessous.' };
+  }
+  render();
+}
+
+/* Une ligne collée peut commencer par son numéro : « 3. Le titre », « 3 - Le titre ». */
+function parsePasted(text) {
+  return text.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+    const m = l.match(/^(\d{1,3})\s*[.)\-–—:]?\s+(.+)$/);
+    return m ? { n: Number(m[1]), t: m[2].trim() } : { n: null, t: l };
+  });
+}
+
+async function saveSerie() {
+  const a = adding, name = (a.name || a.q || '').trim();
+  if (!name || !a.albums.length) return;
+  let id = slug(name), i = 2;
+  while (serie(id)) id = slug(name) + '-' + i++;
+  const rec = { id, name, albums: a.albums.map((al, n) => ({ k: `0.${al.n || n + 1}`, n: al.n || n + 1, t: al.t })) };
+  applyAdded(rec);
+  adding = null;
+  stamp.set(id, Date.now());
+  saveLocal();
+  if (db && canWrite !== false) {
+    setSync('saving');
+    try {
+      await db.doc('custom/' + id).set({ ...rec, at: Date.now() });
+      await db.doc('series/' + id).set({ owned: [], extra: [], at: stamp.get(id) });
+      setSync('ok');
+    } catch (e) { setSync(e && e.code === 'invalid_argument' ? 'local' : 'retry'); }
+  }
+  go('detail', id);
+}
+
+async function delSerie(id) {
+  if (!added.has(id)) return;
+  added.delete(id); owned.delete(id); extra.delete(id); stamp.delete(id);
+  saveLocal();
+  if (db && canWrite !== false) {
+    try { await db.doc('custom/' + id).delete(); await db.doc('series/' + id).delete(); } catch (e) {}
+  }
+  go('shelf');
+}
+
+/* ================= interactions ================= */
+document.addEventListener('click', e => {
+  const al = e.target.closest('.al');
+  if (al) return toggle(al, al.dataset.s, al.dataset.k, al.dataset.x);
+
+  const t = e.target.closest('[data-go]');
+  if (t) return go('detail', t.dataset.go);
+  if (e.target.closest('[data-back]')) return go('shelf');
+
+  const chip = e.target.closest('.chip');
+  if (chip) { filter = chip.dataset.f; return render(); }
+
+  const tab = e.target.closest('.tab');
+  if (tab) {
+    query = ''; document.getElementById('q').value = ''; adding = null;
+    try { localStorage.setItem(LS + '.tab', tab.dataset.tab); } catch (err) {}
+    return go(tab.dataset.tab);
+  }
+  if (e.target.closest('#q-clear')) {
+    query = ''; document.getElementById('q').value = ''; render();
+    return document.getElementById('q').focus();
+  }
+
+  /* ajout d'un album isolé */
+  if (e.target.closest('[data-add-album]')) {
+    const p = document.getElementById('add-album');
+    p.hidden = false; e.target.closest('[data-add-album]').hidden = true;
+    return document.getElementById('aa-t').focus();
+  }
+  if (e.target.closest('[data-cancel]')) {
+    document.getElementById('add-album').hidden = true;
+    document.querySelector('[data-add-album]').hidden = false; return;
+  }
+  if (e.target.closest('[data-save-album]')) {
+    const ti = document.getElementById('aa-t').value.trim();
+    const n = parseInt(document.getElementById('aa-n').value, 10);
+    if (!ti) return;
+    ensure(view.id);
+    extra.get(view.id).push({ n: Number.isFinite(n) ? n : 0, t: ti, o: true });
+    queueWrite(view.id); return render();
+  }
+
+  /* ajout d'une série entière */
+  if (e.target.closest('[data-add-serie]')) {
+    adding = { step: 'ask', q: '' }; toTop(); render();
+    document.getElementById('add-serie')?.scrollIntoView({ block: 'start' });
+    return document.getElementById('as-q')?.focus();
+  }
+  if (e.target.closest('[data-add-cancel]')) { adding = null; return render(); }
+  if (e.target.closest('[data-add-find]')) {
+    const v = document.getElementById('as-q').value.trim();
+    if (v.length < 2) { adding = { step: 'ask', q: v, err: 'Tapez au moins deux lettres.' }; return render(); }
+    return findSerie(v);
+  }
+  if (e.target.closest('[data-add-manual]')) {
+    const v = document.getElementById('as-q').value.trim();
+    if (v.length < 2) { adding = { step: 'ask', q: v, err: 'Tapez d’abord le nom de la série.' }; return render(); }
+    adding = { step: 'edit', q: v, name: v, albums: [] };
+    render();
+    return document.getElementById('ae-t')?.focus();
+  }
+  const rm = e.target.closest('[data-rm]');
+  if (rm) { syncAddName(); adding.albums.splice(Number(rm.dataset.rm), 1); return render(); }
+
+  if (e.target.closest('[data-ae-add]')) {
+    syncAddName();
+    const t = document.getElementById('ae-t').value.trim();
+    const n = parseInt(document.getElementById('ae-n').value, 10);
+    if (!t) { adding.err = 'Tapez le titre de l’album.'; return render(); }
+    adding.err = null;
+    adding.albums.push({ n: Number.isFinite(n) ? n : adding.albums.length + 1, t });
+    render();
+    return document.getElementById('ae-t')?.focus();
+  }
+  if (e.target.closest('[data-ae-paste]')) {
+    syncAddName();
+    const lignes = parsePasted(document.getElementById('ae-paste').value);
+    if (!lignes.length) { adding.err = 'Collez au moins un titre.'; adding.paste = true; return render(); }
+    let suivant = adding.albums.length ? Math.max(...adding.albums.map(x => x.n || 0)) + 1 : 1;
+    for (const l of lignes) adding.albums.push({ n: l.n != null ? l.n : suivant++, t: l.t });
+    adding.err = null; adding.paste = true;
+    return render();
+  }
+  if (e.target.closest('[data-add-save]')) { syncAddName(); return saveSerie(); }
+
+  const del = e.target.closest('[data-del-serie]');
+  if (del) {
+    if (del.dataset.sure) return delSerie(view.id);
+    del.dataset.sure = '1'; del.textContent = 'Confirmer la suppression';
+  }
+});
+
+document.addEventListener('input', e => {
+  if (e.target.id === 'q') { query = e.target.value; render(); }
+  if (e.target.id === 'aa-t') {
+    const b = document.querySelector('[data-save-album]');
+    if (b) b.disabled = !e.target.value.trim();
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Enter') return;
+  if (e.target.id === 'as-q') { e.preventDefault(); document.querySelector('[data-add-find]')?.click(); }
+  if (e.target.id === 'ae-t' || e.target.id === 'ae-n') {
+    e.preventDefault(); document.querySelector('[data-ae-add]')?.click();
+  }
+  if (e.target.id === 'aa-t' || e.target.id === 'aa-n') {
+    e.preventDefault(); document.querySelector('[data-save-album]')?.click();
+  }
+});
+
+/* ================= démarrage ================= */
+const local = readLocal();
+if (local) {
+  (local.added || []).forEach(applyAdded);
+  for (const id in (local.state || {})) applyState(id, local.state[id], false);
+}
+try {
+  const tb = localStorage.getItem(LS + '.tab');
+  if (['shelf', 'missing', 'stats'].includes(tb)) view = { name: tb, id: null };
+} catch (e) {}
+setSync(local ? 'local' : 'ok');
+render();
+
+(async () => {
+  const user = await window.claude?.use?.('user');
+  if (user) { try { canWrite = await user.can('data.write'); } catch (e) {} }
+
+  db = await window.claude?.use?.('db');
+  if (!db) { setSync('local'); return; }
+
+  db.collection('custom').onSnapshot(snap => {
+    let changed = false;
+    for (const d of snap.docs) changed = applyAdded({ id: d.id, ...d.data() }) || changed;
+    if (changed) { saveLocal(); render(); }
+  }, () => {});
+
+  db.collection('series').onSnapshot(snap => {
+    let changed = false;
+    for (const d of snap.docs) changed = applyState(d.id, d.data(), true) || changed;
+    if (changed) { saveLocal(); render(); }
+    if (!pending.size) setSync(canWrite === false ? 'local' : 'ok');
+  }, err => { if (err.code !== 'unavailable') setSync('local'); });
+})();
+</script>
