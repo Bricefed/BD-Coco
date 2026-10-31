@@ -171,12 +171,43 @@ qui repartent à 1 (la série s'appelait d'abord « Les Gorilles »). Les
 albums 21 à 40 ont été renumérotés à la suite ; à confronter à ses albums
 si elle en acquiert d'autres.
 
-**Restent à compléter** : Spirou et Fantasio, Les Schtroumpfs, Lefranc
-(29 → ~34), Durango, Mac Coy, L'Agent 212, Kador, Carmen Cru, Jari,
-Valentin, Les Simpson, La Découverte du monde, Éric Castel (à vérifier,
-peut-être déjà complète), plus l'arbitrage sur les albums isolés.
-Les pages de Spirou et des Schtroumpfs sont trop longues pour être lues
-d'un bloc ; il faudra les reprendre par morceaux.
+### Le regroupement
+
+`supabase/regrouper.sql`, à exécuter en troisième. Il fait deux choses :
+
+**Valentin le vagabond** passe de 1 à 7 albums, et la série reprend son
+vrai nom — elle s'appelait « Valentin ».
+
+**Neuf one-shots sont rassemblés** dans une entrée « Albums isolés ».
+Leurs titres ne voulaient rien dire seuls : « Le tennis », « Tome 1 »,
+« La cinquantaine ». Ils sont recomposés avec le nom de leur série.
+
+| Avant | Après |
+|---|---|
+| Claire Bretécher → « Agripppine » | Agrippine (Claire Bretécher) |
+| Calagan → « Rallye raid » | Calagan — Rallye raid |
+| Idées noires → « Tome 1 » | Idées noires |
+| Il était une fois → « Yannick noah » | Il était une fois… Yannick Noah |
+| La Vérité sur… → « Le tennis » | La Vérité sur le tennis |
+| Le Guide de… → « La cinquantaine » | Le Guide de la cinquantaine |
+| Les Accros de MSN → « Tome 1 » | Les Accros de MSN |
+| Rocky Luke → « Banlieue west » | Rocky Luke — Banlieue West |
+| Charly la Rouille | Charly la Rouille |
+
+**L'étagère passe de 61 à 53 séries**, et « Albums isolés » affiche 9/9
+au lieu de neuf vignettes à 1/1.
+
+### Ce qui reste
+
+**Jari** (3 albums) et **Kador** (4) : aucune liste trouvée sur
+Wikipédia, les pages n'existent pas ou ne la contiennent pas.
+
+**Les Simpson** (3) et **La Découverte du monde** (8) : des collections
+plutôt que des séries, à compléter à la main si le besoin s'en fait
+sentir.
+
+**Natacha** (23) et **Les Reportages de Lefranc** (9) sont vérifiées
+complètes. **Éric Castel** est laissée en l'état, voir plus haut.
 
 ## Dans quel ordre s'y prendre
 
