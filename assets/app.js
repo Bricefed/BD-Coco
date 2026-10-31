@@ -390,23 +390,47 @@ function renderStats() {
     <div class="btns"><button class="btn" data-auth-signout>Déconnexion</button></div>`;
 }
 
+/* Les résultats sont rangés par série, série la mieux fournie en premier :
+   une liste à plat de quarante lignes ne dit pas où l'on a cherché. */
 function renderSearch() {
   const q = norm(query.trim());
   if (!q) return;
-  const hits = [];
+
+  const groupes = [];
   for (const s of series) {
-    const inName = norm(s.name).includes(q);
-    for (const a of s.albums) if (inName || norm(a.title).includes(q)) hits.push(a);
-    if (hits.length > 400) break;
+    const nomTrouve = norm(s.name).includes(q);
+    const trouves = s.albums.filter(a => nomTrouve || norm(a.title).includes(q));
+    if (trouves.length) groupes.push({ s, trouves, nomTrouve });
   }
-  const have = hits.filter(a => a.owned).length;
-  $('v-search').innerHTML = hits.length
-    ? `<p class="eyebrow">${hits.length} résultat${hits.length > 1 ? 's' : ''} — ${have} chez vous</p>
-       <p class="hint">Touchez une ligne pour changer la réponse.</p>
-       <ul class="albums">${hits.slice(0, 120).map(a => albumRow(a, { series: true, verdict: true })).join('')}</ul>`
-    : `<p class="empty"><strong>Aucun album de ce nom</strong>
-         Ce titre n’est pas dans la liste. Vérifiez l’orthographe, ou ajoutez la série
-         depuis « Ma collection ».</p>`;
+  groupes.sort((a, b) => b.trouves.length - a.trouves.length || byName(a.s, b.s));
+
+  const nb = groupes.reduce((k, g) => k + g.trouves.length, 0);
+  const chezVous = groupes.reduce((k, g) => k + g.trouves.filter(a => a.owned).length, 0);
+
+  if (!nb) {
+    $('v-search').innerHTML = `<p class="empty"><strong>Aucun album de ce nom</strong>
+      Ce titre n’est pas dans la liste. Vérifiez l’orthographe, ou ajoutez la série
+      depuis « Ma collection ».</p>`;
+    return;
+  }
+
+  $('v-search').innerHTML = `
+    <p class="eyebrow">${nb} album${nb > 1 ? 's' : ''} dans
+       ${groupes.length} série${groupes.length > 1 ? 's' : ''} — ${chezVous} chez vous</p>
+    <p class="hint">Touchez une ligne pour changer la réponse.</p>
+    ${groupes.map(g => {
+      const ont = g.trouves.filter(a => a.owned).length;
+      return `<div class="group-head">
+          <span class="thumb">${art(g.s)}</span>
+          <span class="gt">${esc(g.s.name)}${g.nomTrouve ? ' <span class="tag">série</span>' : ''}</span>
+          <span class="gn"><b>${ont}</b> / ${g.trouves.length}</span>
+        </div>
+        <ul class="albums">${g.trouves.slice(0, 60)
+          .map(a => albumRow(a, { verdict: true })).join('')}</ul>
+        ${g.trouves.length > 60
+          ? `<p class="hint" style="margin-top:8px">… et ${g.trouves.length - 60} autres dans
+             cette série. Ouvrez-la depuis « Ma collection » pour tout voir.</p>` : ''}`;
+    }).join('')}`;
 }
 
 function renderAuth() {
