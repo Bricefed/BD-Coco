@@ -50,8 +50,10 @@ voulu, `schema.sql` pose lui-même les `GRANT` dont l'API REST a besoin.
 
 ### 2. Le compte, et le verrou d'écriture
 
-**Authentication → Users → Add user** : son adresse e-mail, et cocher
-« Auto Confirm User ».
+**Authentication → Users → Add user** : son adresse e-mail, **un mot de passe**,
+et cocher « Auto Confirm User ». Le site demande une adresse et un mot de
+passe — il n'y a pas de lien par e-mail, et aucun compte ne peut naître depuis
+le site. Un oubli de mot de passe se règle ici, au même endroit.
 
 Ensuite — et c'est le point à ne pas sauter avant de rendre le dépôt public :
 
@@ -65,8 +67,8 @@ Ensuite — et c'est le point à ne pas sauter avant de rendre le dépôt public
 Pourquoi trois verrous. `schema.sql` laisse la collection en lecture libre et
 réserve l'écriture à *toute personne connectée* ; la clé publiable, qui sera
 dans le dépôt public, suffit à appeler `/auth/v1/signup` et à le devenir. Le
-`shouldCreateUser: false` du site ne protège que son propre formulaire, et le
-réglage du dashboard se rouvre d'un clic sans laisser de trace. Les deux
+formulaire du site ne crée jamais de compte, mais il ne protège que lui-même,
+et le réglage du dashboard se rouvre d'un clic sans laisser de trace. Les deux
 fichiers SQL, eux, tiennent tout seuls.
 
 ### Ajouter quelqu'un plus tard
@@ -77,7 +79,8 @@ Dans l'ordre, sinon la création de compte sera refusée :
 insert into public.adresses_autorisees (email) values ('nouvelle@adresse.fr');
 ```
 
-puis Authentication → Users → Add user avec cette adresse, puis :
+puis Authentication → Users → Add user avec cette adresse et un mot de passe,
+puis :
 
 ```sql
 insert into public.editeurs (user_id)
@@ -101,15 +104,13 @@ curl -s -X POST "$P/auth/v1/signup" -H "apikey: $K" \
 # doit refuser, pas créer de compte
 ```
 
-### 3. Les adresses de retour
+### 3. Les adresses de retour — rien à faire
 
-**Authentication → URL Configuration** :
-
-- Site URL : `https://bricefed.github.io/BD-Coco/`
-- Redirect URLs : ajouter la même adresse, plus `http://localhost:8788/` pour
-  travailler en local.
-
-Sans cela, le lien de connexion reçu par e-mail ne ramène nulle part.
+La connexion se fait par adresse et mot de passe, sans lien par e-mail : il n'y
+a donc pas d'adresse de retour à déclarer. Si un jour vous ajoutez une
+réinitialisation de mot de passe depuis le site, il faudra renseigner
+**Authentication → URL Configuration** → Site URL et Redirect URLs avec
+`https://bricefed.github.io/BD-Coco/`.
 
 ### 4. La configuration du site
 
@@ -191,6 +192,6 @@ d'une série est entièrement manuel**, album par album ou en collant une liste
 | « La base est vide » | `schema.sql` et `seed.sql` n'ont pas été exécutés. |
 | « La base ne répond pas » | Les valeurs de `config.js` ne correspondent pas au projet. |
 | « Ce compte n'a pas accès » | Le compte existe mais n'est pas dans `public.editeurs` : repassez la dernière requête d'`acces.sql` avec la bonne adresse. |
-| « Cette adresse n'a pas accès » à l'envoi du lien | Aucun compte n'existe pour cette adresse. Créez-le dans Authentication → Users. |
-| Le lien de connexion ne revient pas | L'adresse du site n'est pas dans Redirect URLs (étape 3). |
+| « Adresse ou mot de passe incorrect » | Le compte n'existe pas, ou le mot de passe est faux. Les deux donnent le même message, exprès. Vérifiez dans Authentication → Users. |
+| « Ce compte n'est pas encore confirmé » | « Auto Confirm User » n'était pas coché à la création. Confirmez le compte depuis le dashboard. |
 | « Enregistrement impossible » une fois entrée | Les policies d'`acces.sql` ou les `GRANT` de `schema.sql` manquent. |

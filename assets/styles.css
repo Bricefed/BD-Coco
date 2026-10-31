@@ -202,9 +202,11 @@ main{max-width:760px; margin:0 auto;
   box-shadow:var(--shadow); display:grid; gap:12px; margin-bottom:16px}
 .panel h3{font:600 22px/1 var(--f-disp); text-transform:uppercase; letter-spacing:.015em}
 .field{display:flex; gap:9px}
-input[type=text]{font:400 16.5px var(--f-body); color:var(--ink); background:var(--card-2);
+input[type=text], input[type=email], input[type=password]{
+  font:400 16.5px var(--f-body); color:var(--ink); background:var(--card-2);
   border:1.5px solid var(--rule); border-radius:11px; padding:13px; min-width:0; flex:1}
-input[type=text]:focus{border-color:var(--blue); outline:none}
+input[type=text]:focus, input[type=email]:focus, input[type=password]:focus{
+  border-color:var(--blue); outline:none}
 input.num{width:72px; flex:none; text-align:center; font-variant-numeric:tabular-nums}
 textarea{font:400 16px/1.45 var(--f-body); color:var(--ink); background:var(--card-2);
   border:1.5px solid var(--rule); border-radius:11px; padding:12px; width:100%;

@@ -422,32 +422,24 @@ function renderAuth() {
     return;
   }
 
-  $('v-auth').innerHTML = a.step === 'sent'
-    ? `<div class="panel">
-        <h3>Regardez vos e-mails</h3>
-        <p class="note">Un lien de connexion vient d’être envoyé à
-           <span class="mail">${esc(a.email)}</span>. Ouvrez-le depuis cet appareil :
-           il vous ramènera ici, connectée.</p>
-        <p class="note">Le lien n’est valable qu’une heure. Pensez aux indésirables.</p>
-        <div class="btns"><button class="btn" data-auth-retry>Renvoyer un lien</button>
-          ${gate ? '' : '<button class="btn" data-auth-close>Revenir à la collection</button>'}</div>
-      </div>`
-    : `<div class="panel">
-        <h3>${gate ? 'Bienvenue' : 'Se connecter'}</h3>
-        <p class="note">${gate
-          ? 'Cette collection est privée. Entrez l’adresse e-mail qui vous a été donnée : vous recevrez un lien à ouvrir, sans mot de passe à retenir.'
-          : 'Votre adresse e-mail suffit : vous recevrez un lien à ouvrir, sans mot de passe à retenir.'}
-           La connexion reste active plusieurs mois.</p>
-        <div class="field"><input type="text" id="auth-mail" inputmode="email"
-          autocomplete="email" placeholder="votre adresse e-mail" aria-label="Adresse e-mail"
-          value="${esc(a.email || '')}"></div>
-        ${a.err ? `<p class="note warn">${esc(a.err)}</p>` : ''}
-        <div class="btns">
-          ${gate ? '' : '<button class="btn" data-auth-close>Annuler</button>'}
-          <button class="btn pri wide" data-auth-send${a.busy ? ' disabled' : ''}>
-            ${a.busy ? 'Envoi…' : 'Recevoir le lien'}</button>
-        </div>
-      </div>`;
+  $('v-auth').innerHTML = `<div class="panel">
+      <h3>${gate ? 'Bienvenue' : 'Se connecter'}</h3>
+      <p class="note">Cette collection est privée. Connectez-vous avec l’adresse et le
+         mot de passe qui vous ont été donnés. Une fois entrée, vous le restez :
+         il n’y a pas à recommencer à chaque visite.</p>
+      <div class="field"><input type="email" id="auth-mail" inputmode="email"
+        autocomplete="username" placeholder="votre adresse e-mail" aria-label="Adresse e-mail"
+        value="${esc(a.email || '')}"></div>
+      <div class="field"><input type="password" id="auth-pass"
+        autocomplete="current-password" placeholder="votre mot de passe"
+        aria-label="Mot de passe"></div>
+      ${a.err ? `<p class="note warn">${esc(a.err)}</p>` : ''}
+      <div class="btns">
+        ${gate ? '' : '<button class="btn" data-auth-close>Annuler</button>'}
+        <button class="btn pri wide" data-auth-send${a.busy ? ' disabled' : ''}>
+          ${a.busy ? 'Connexion…' : 'Se connecter'}</button>
+      </div>
+    </div>`;
 }
 
 function renderAddPanel() {
@@ -591,21 +583,15 @@ function parsePasted(text) {
 }
 
 /* ========================= connexion ========================= */
-async function envoyerLien(email) {
+/* Connexion classique : seuls les comptes créés dans Supabase passent. Aucun
+   compte ne peut naître ici — ni par ce formulaire, ni par l'API, le
+   déclencheur d'inscriptions.sql s'en charge. */
+async function seConnecter(email, motDePasse) {
   authStep = { step: 'ask', email, busy: true }; render();
   try {
-    const { error } = await sb.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: location.href.split('#')[0].split('?')[0],
-        // Le site est public : sans ceci, n'importe qui pourrait se créer un
-        // compte et donc cocher. Seuls les comptes créés depuis le dashboard
-        // Supabase peuvent se connecter.
-        shouldCreateUser: false,
-      },
-    });
+    const { error } = await sb.auth.signInWithPassword({ email, password: motDePasse });
     if (error) throw error;
-    authStep = { step: 'sent', email };
+    authStep = null;          // surChangementCompte prend le relais
   } catch (e) {
     authStep = { step: 'ask', email, err: messageAuth(e) };
   }
@@ -615,13 +601,17 @@ async function envoyerLien(email) {
 function messageAuth(e) {
   const m = String((e && e.message) || '').toLowerCase();
   const code = String((e && e.code) || '');
-  // Adresse inconnue : le site ne crée pas de compte, c'est le cas le plus
-  // courant et il mérite d'être nommé.
-  if (code === 'otp_disabled' || m.includes('signups not allowed') || m.includes('not allowed for otp'))
-    return 'Cette adresse n’a pas accès à cette collection. Vérifiez l’orthographe, ou demandez qu’elle soit ajoutée.';
-  if (m.includes('rate') || m.includes('seconds')) return 'Trop de demandes d’affilée. Patientez une minute.';
-  if (m.includes('invalid') || m.includes('email')) return 'Cette adresse ne semble pas valide.';
-  return 'L’envoi a échoué. Vérifiez la connexion et réessayez.';
+  // Un refus ne dit jamais si l'adresse existe : ce serait renseigner qui
+  // cherche à entrer.
+  if (code === 'invalid_credentials' || m.includes('invalid login credentials'))
+    return 'Adresse ou mot de passe incorrect.';
+  if (code === 'email_not_confirmed' || m.includes('not confirmed'))
+    return 'Ce compte n’est pas encore confirmé. Prévenez la personne qui l’a créé.';
+  if (m.includes('rate') || m.includes('too many') || m.includes('seconds'))
+    return 'Trop de tentatives d’affilée. Patientez une minute.';
+  if (m.includes('failed to fetch') || m.includes('network'))
+    return 'Pas de connexion. Vérifiez le réseau et réessayez.';
+  return 'La connexion a échoué. Réessayez.';
 }
 
 /* ========================= interactions ========================= */
@@ -653,16 +643,19 @@ document.addEventListener('click', async e => {
     authStep = { step: 'ask', email: '' }; toTop(); return render();
   }
   if (e.target.closest('[data-auth-close]')) { authStep = null; return render(); }
-  if (e.target.closest('[data-auth-retry]')) {
-    authStep = { step: 'ask', email: authStep?.email || '' }; return render();
-  }
   if (e.target.closest('[data-auth-signout]')) { await sb.auth.signOut(); return; }
   if (e.target.closest('[data-auth-send]')) {
     const v = ($('auth-mail').value || '').trim();
+    const p = $('auth-pass').value || '';
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v)) {
-      authStep = { step: 'ask', email: v, err: 'Tapez une adresse e-mail complète.' }; return render();
+      authStep = { step: 'ask', email: v, err: 'Tapez une adresse e-mail complète.' };
+      return render();
     }
-    return envoyerLien(v);
+    if (!p) {
+      authStep = { step: 'ask', email: v, err: 'Tapez votre mot de passe.' };
+      render(); return $('auth-pass')?.focus();
+    }
+    return seConnecter(v, p);
   }
 
   /* un album isolé dans une série existante */
@@ -797,7 +790,8 @@ document.addEventListener('keydown', e => {
   const id = e.target.id;
   if (id === 'ae-t' || id === 'ae-n') { e.preventDefault(); document.querySelector('[data-ae-add]')?.click(); }
   if (id === 'aa-t' || id === 'aa-n') { e.preventDefault(); document.querySelector('[data-save-album]')?.click(); }
-  if (id === 'auth-mail') { e.preventDefault(); document.querySelector('[data-auth-send]')?.click(); }
+  if (id === 'auth-mail') { e.preventDefault(); $('auth-pass')?.focus(); }
+  if (id === 'auth-pass') { e.preventDefault(); document.querySelector('[data-auth-send]')?.click(); }
   if (id === 'ed-t' || id === 'ed-n') { e.preventDefault(); document.querySelector('[data-edit-save]')?.click(); }
   if (id === 'se-name') { e.preventDefault(); document.querySelector('[data-rename]')?.click(); }
 });
