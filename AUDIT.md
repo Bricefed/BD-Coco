@@ -133,6 +133,39 @@ comporte réellement « tome 1 » et « tome 2 ».
 
 ---
 
+## Avancement
+
+**7 séries sur 33 sont complétées** — `supabase/completer.sql`, à exécuter
+dans le SQL Editor. Les listes viennent de Wikipédia ; les albums déjà
+cochés ont été retrouvés par leur titre et le restent.
+
+| Série | Avant | Après |
+|---|---:|---:|
+| Ric Hochet | 1 | **78** |
+| Les Tuniques Bleues | 1 | **70** |
+| Sammy | 1 | **40** |
+| Cédric | 3 | **37** |
+| Marsupilami | 2 | **36** |
+| Iznogoud | 2 | **33** |
+| Papyrus | 1 | **33** |
+
+316 albums ajoutés, aucune coche perdue. Trois titres ont été rapprochés
+malgré une faute de frappe : « Terrains minets » → « Terrain minets »,
+« Enfins seuls » → « Enfin seuls ! », « Le grand vizir » →
+« Le Grand Vizir Iznogoud ».
+
+**Réserve sur Sammy** : Wikipédia présente la série en deux numérotations
+qui repartent à 1 (la série s'appelait d'abord « Les Gorilles »). Les
+albums 21 à 40 ont été renumérotés à la suite ; à confronter à ses albums
+si elle en acquiert d'autres.
+
+**Restent à compléter** : Spirou et Fantasio, Les Schtroumpfs, Lefranc
+(29 → ~34), Durango, Mac Coy, L'Agent 212, Kador, Carmen Cru, Jari,
+Valentin, Les Simpson, La Découverte du monde, Éric Castel (à vérifier,
+peut-être déjà complète), plus l'arbitrage sur les albums isolés.
+Les pages de Spirou et des Schtroumpfs sont trop longues pour être lues
+d'un bloc ; il faudra les reprendre par morceaux.
+
 ## Dans quel ordre s'y prendre
 
 1. **Compléter les 33 listes tronquées.** C'est ce qui débloque l'onglet
