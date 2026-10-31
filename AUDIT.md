@@ -135,24 +135,36 @@ comporte réellement « tome 1 » et « tome 2 ».
 
 ## Avancement
 
-**7 séries sur 33 sont complétées** — `supabase/completer.sql`, à exécuter
-dans le SQL Editor. Les listes viennent de Wikipédia ; les albums déjà
-cochés ont été retrouvés par leur titre et le restent.
+**14 séries sur 33 sont complétées**, en deux fichiers à exécuter dans le
+SQL Editor : `supabase/completer.sql` puis `supabase/completer2.sql`. Les
+listes viennent de Wikipédia ; les albums déjà cochés ont été retrouvés
+par leur titre et le restent.
 
-| Série | Avant | Après |
-|---|---:|---:|
-| Ric Hochet | 1 | **78** |
-| Les Tuniques Bleues | 1 | **70** |
-| Sammy | 1 | **40** |
-| Cédric | 3 | **37** |
-| Marsupilami | 2 | **36** |
-| Iznogoud | 2 | **33** |
-| Papyrus | 1 | **33** |
+| Série | Avant | Après | | Série | Avant | Après |
+|---|---:|---:|---|---|---:|---:|
+| Ric Hochet | 1 | **78** | | Spirou et Fantasio | 5 | **59** |
+| Les Tuniques Bleues | 1 | **70** | | Les Schtroumpfs | 4 | **43** |
+| Sammy | 1 | **40** | | Lefranc | 29 | **37** |
+| Cédric | 3 | **37** | | L'Agent 212 | 1 | **30** |
+| Marsupilami | 2 | **36** | | Mac Coy | 1 | **21** |
+| Iznogoud | 2 | **33** | | Durango | 3 | **19** |
+| Papyrus | 1 | **33** | | Carmen Cru | 5 | **8** |
 
-316 albums ajoutés, aucune coche perdue. Trois titres ont été rapprochés
-malgré une faute de frappe : « Terrains minets » → « Terrain minets »,
-« Enfins seuls » → « Enfin seuls ! », « Le grand vizir » →
-« Le Grand Vizir Iznogoud ».
+**485 albums ajoutés, aucune coche perdue.**
+
+Douze titres ont été rapprochés malgré une faute de frappe : « Terrains
+minets » → « Terrain minets », « Enfins seuls » → « Enfin seuls ! »,
+« La mome bleue » → « La Momie bleue », « Le sctroumpfissime » → « Le
+Schtroumpfissime », « L'ecorché vive » → « L'Écorchée vive », et d'autres
+du même ordre. Chacun a été relu avant d'être accepté.
+
+Deux albums de Spirou qu'elle possède — *Tu comprendras quand tu s'ras
+grand* et *Mes amis à poil* — n'appartiennent pas à la série numérotée.
+Ils sont conservés dans un bloc « Autres », toujours cochés.
+
+**Éric Castel n'a pas été touchée** : la liste de référence en donne 15,
+elle en a 16. Réduire aurait fait disparaître un album. Un garde-fou
+empêche désormais toute série de rétrécir.
 
 **Réserve sur Sammy** : Wikipédia présente la série en deux numérotations
 qui repartent à 1 (la série s'appelait d'abord « Les Gorilles »). Les
