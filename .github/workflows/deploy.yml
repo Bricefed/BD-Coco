@@ -33,6 +33,18 @@ jobs:
           cp -r assets covers _site/
           touch _site/.nojekyll
 
+          # GitHub Pages sert les assets avec max-age=600 : sans empreinte, un
+          # navigateur rejoue l'ancien JS pendant dix minutes après un
+          # déploiement. Le numéro de commit dans l'URL force le rechargement.
+          V="${GITHUB_SHA::8}"
+          sed -i \
+            -e "s|assets/styles\.css|assets/styles.css?v=$V|" \
+            -e "s|assets/config\.js|assets/config.js?v=$V|" \
+            -e "s|assets/app\.js|assets/app.js?v=$V|" \
+            _site/index.html
+          echo "Version des assets : $V"
+          grep -o 'assets/[a-z.]*\.[a-z]*?v=[0-9a-f]*' _site/index.html
+
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
